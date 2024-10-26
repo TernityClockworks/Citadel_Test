@@ -1,4 +1,4 @@
-package com.eureka.foundations;
+package com.github.ternityclockworks.eureka.foundations;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;

@@ -1,4 +1,4 @@
-package com.eureka.foundations;
+package com.github.ternityclockworks.eureka.foundations;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
