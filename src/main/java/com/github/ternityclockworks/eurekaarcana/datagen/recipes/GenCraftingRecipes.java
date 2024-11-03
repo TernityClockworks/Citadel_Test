@@ -1,4 +1,4 @@
-package com.github.ternityclockworks.eurekaarcana.datagen;
+package com.github.ternityclockworks.eurekaarcana.datagen.recipes;
 
 import com.github.ternityclockworks.eurekaarcana.server.item.EurekaItemRegistry;
 
@@ -12,9 +12,9 @@ import net.minecraftforge.common.Tags;
 
 import java.util.function.Consumer;
 
-public class EurekaRecipes extends RecipeProvider {
+public class GenCraftingRecipes extends RecipeProvider {
 
-    public EurekaRecipes(PackOutput packOutput) {
+    public GenCraftingRecipes(PackOutput packOutput) {
         super(packOutput);
     }
 

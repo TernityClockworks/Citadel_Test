@@ -6,9 +6,9 @@ import net.minecraft.data.PackOutput;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
-public class EurekaItemModels extends ItemModelProvider {
+public class GenItemModels extends ItemModelProvider {
 
-    public EurekaItemModels(PackOutput output, ExistingFileHelper existingFileHelper) {
+    public GenItemModels(PackOutput output, ExistingFileHelper existingFileHelper) {
         super(output, EurekaArcana.MODID, existingFileHelper);
     }
     

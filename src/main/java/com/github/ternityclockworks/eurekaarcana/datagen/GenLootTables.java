@@ -22,7 +22,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class EurekaLootTables extends VanillaBlockLoot {
+public class GenLootTables extends VanillaBlockLoot {
 
     @Override
     protected void generate() {

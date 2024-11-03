@@ -11,6 +11,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import com.github.ternityclockworks.eurekaarcana.datagen.recipes.GenCraftingRecipes;
+
 public class DataGeneration {
 
     public static void generate(GatherDataEvent event) {
@@ -19,14 +21,14 @@ public class DataGeneration {
         CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
         //generator.addProvider(event.includeClient(), new EurekaBlockStates(packOutput, event.getExistingFileHelper()));
-        generator.addProvider(event.includeClient(), new EurekaItemModels(packOutput, event.getExistingFileHelper()));
-        generator.addProvider(event.includeClient(), new EurekaLanguageProvider(packOutput, "en_us"));
+        generator.addProvider(event.includeClient(), new GenItemModels(packOutput, event.getExistingFileHelper()));
+        generator.addProvider(event.includeClient(), new GenLanguageProvider(packOutput, "en_us"));
         
-        EurekaBlockTags blockTags = new EurekaBlockTags(packOutput, lookupProvider, event.getExistingFileHelper());
+        GenBlockTags blockTags = new GenBlockTags(packOutput, lookupProvider, event.getExistingFileHelper());
         generator.addProvider(event.includeServer(), blockTags);
-        generator.addProvider(event.includeServer(), new EurekaItemTags(packOutput, lookupProvider, blockTags, event.getExistingFileHelper()));
-        generator.addProvider(event.includeServer(), new EurekaRecipes(packOutput));
+        generator.addProvider(event.includeServer(), new GenItemTags(packOutput, lookupProvider, blockTags, event.getExistingFileHelper()));
+        generator.addProvider(event.includeServer(), new GenCraftingRecipes(packOutput));
         generator.addProvider(event.includeServer(), new LootTableProvider(packOutput, Collections.emptySet(),
-                List.of(new LootTableProvider.SubProviderEntry(EurekaLootTables::new, LootContextParamSets.BLOCK))));
+                List.of(new LootTableProvider.SubProviderEntry(GenLootTables::new, LootContextParamSets.BLOCK))));
     }
 }

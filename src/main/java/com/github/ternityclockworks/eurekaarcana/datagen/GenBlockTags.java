@@ -10,9 +10,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
-public class EurekaBlockTags extends BlockTagsProvider {
+public class GenBlockTags extends BlockTagsProvider {
 
-    public EurekaBlockTags(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable ExistingFileHelper helper) {
+    public GenBlockTags(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable ExistingFileHelper helper) {
         super(packOutput, lookupProvider, EurekaArcana.MODID, helper);
     }
 

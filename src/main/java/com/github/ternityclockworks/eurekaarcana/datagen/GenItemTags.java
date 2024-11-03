@@ -9,9 +9,9 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 
 import java.util.concurrent.CompletableFuture;
 
-public class EurekaItemTags extends ItemTagsProvider {
+public class GenItemTags extends ItemTagsProvider {
 
-    public EurekaItemTags(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookupProvider, BlockTagsProvider blockTags, ExistingFileHelper helper) {
+    public GenItemTags(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookupProvider, BlockTagsProvider blockTags, ExistingFileHelper helper) {
         super(packOutput, lookupProvider, blockTags.contentsGetter(), EurekaArcana.MODID, helper);
     }
 

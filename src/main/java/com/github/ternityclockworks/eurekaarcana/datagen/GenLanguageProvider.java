@@ -5,9 +5,9 @@ import com.github.ternityclockworks.eurekaarcana.server.item.EurekaItemRegistry;
 import net.minecraft.data.PackOutput;
 import net.minecraftforge.common.data.LanguageProvider;
 
-public class EurekaLanguageProvider extends LanguageProvider {
+public class GenLanguageProvider extends LanguageProvider {
 
-    public EurekaLanguageProvider(PackOutput output, String locale) {
+    public GenLanguageProvider(PackOutput output, String locale) {
         super(output, EurekaArcana.MODID, locale);
     }
 

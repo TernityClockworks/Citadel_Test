@@ -8,6 +8,9 @@ import com.github.ternityclockworks.eurekaarcana.server.misc.*;
 import com.github.ternityclockworks.eurekaarcana.datagen.DataGeneration;
 import com.mojang.logging.LogUtils;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import mcjty.theoneprobe.ForgeEventHandlers;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
@@ -50,7 +53,13 @@ import org.slf4j.Logger;
 public class EurekaArcana
 {
     public static final String MODID = "eurekaarcana";
-    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LogUtils.getLogger();
+	public static final String NAME = "Eureka! Arcana";
+	public static final String VERSION = "0.0.1-prealpha";
+
+	public static final Gson GSON = new GsonBuilder().setPrettyPrinting()
+		.disableHtmlEscaping()
+		.create();
     
     public static CommonProxy PROXY = DistExecutor.runForDist(() -> ClientProxy::new, () -> CommonProxy::new);
     private static final String PROTOCOL_VERSION = Integer.toString(1);
@@ -128,4 +137,8 @@ public class EurekaArcana
     public static <MSG> void sendMSGToServer(MSG message) {
         NETWORK_WRAPPER.sendToServer(message);
     }
+    
+    public static ResourceLocation asResource(String path) {
+		return new ResourceLocation(MODID, path);
+	}
 }
