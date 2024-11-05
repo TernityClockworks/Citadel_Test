@@ -128,4 +128,8 @@ public class EurekaArcana
     public static <MSG> void sendMSGToServer(MSG message) {
         NETWORK_WRAPPER.sendToServer(message);
     }
+    
+    public static ResourceLocation asResource(String path) {
+		return new ResourceLocation(MODID, path);
+	}
 }

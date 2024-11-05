@@ -1,4 +1,4 @@
-package com.github.ternityclockworks.eurekaarcana.datagen;
+package com.github.ternityclockworks.eurekaarcana.datagen.recipes;
 
 import com.github.ternityclockworks.eurekaarcana.server.item.EurekaItemRegistry;
 

@@ -11,6 +11,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import com.github.ternityclockworks.eurekaarcana.datagen.recipes.EurekaRecipes;
+
 public class DataGeneration {
 
     public static void generate(GatherDataEvent event) {
