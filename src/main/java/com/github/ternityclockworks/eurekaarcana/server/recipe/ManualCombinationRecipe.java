@@ -30,11 +30,10 @@ import net.minecraft.world.item.crafting.RecipeType;
 @ParametersAreNonnullByDefault
 public abstract class ManualCombinationRecipe<T extends Container> implements Recipe<T>{
 
-	protected ResourceLocation recipeTypeID;
-	protected Ingredient offhandIngredient;
+	protected ResourceLocation recipeID; // Resource for both the recipe and loot table
 	protected Ingredient mainhandIngredient;
-	protected LootTable recipeLootTable;
-	protected NonNullList<ItemStack> recipeOutput;
+	protected Ingredient offhandIngredient;
+	protected NonNullList<ItemStack> recipeOutput = NonNullList.create();;
 	protected int combinationDuration;
 
 	private RecipeType<?> type;
@@ -46,24 +45,26 @@ public abstract class ManualCombinationRecipe<T extends Container> implements Re
 		this.serializer = typeInfo.getSerializer();
 		this.type = typeInfo.getType();
 		
-		this.recipeTypeID = params.recipeTypeID;
-		this.offhandIngredient = params.offhandIngredient;
+		this.recipeID = params.recipeTypeID;
 		this.mainhandIngredient = params.mainhandIngredient;
-		this.recipeLootTable = params.recipeLootTable;
-		this.recipeOutput = params.recipeOutput;
+		this.offhandIngredient = params.offhandIngredient;
 		this.combinationDuration = params.combinationDuration;
 	}
 	
 	@Override
 	public NonNullList<Ingredient> getIngredients() {
 		NonNullList<Ingredient> ingredients = NonNullList.create();
-		ingredients.add(offhandIngredient);
 		ingredients.add(mainhandIngredient);
+		ingredients.add(offhandIngredient);
 		return ingredients;
 	}
 	
 	public ResourceLocation getRecipeTypeID() {
-		return recipeTypeID;
+		return recipeID;
+	}
+	
+	public Ingredient getMainhandIngredient() {
+		return mainhandIngredient;
 	}
 	
 	public Ingredient getOffhandIngredient() {
@@ -71,7 +72,9 @@ public abstract class ManualCombinationRecipe<T extends Container> implements Re
 	}
 	
 	public LootTable getLootTable() {
-		return recipeLootTable;
+		LootTable table = LootTable.EMPTY;
+		table.setLootTableId(recipeID);
+		return table;
 	}
 	
 	public NonNullList<ItemStack> getRecipeOutput() {
@@ -119,45 +122,27 @@ public abstract class ManualCombinationRecipe<T extends Container> implements Re
 	public IRecipeTypeInfo getTypeInfo() {
 		return typeInfo;
 	}
-
-	// Additional Data added by subtypes
-
-	public void readAdditional(JsonObject json) {}
-
-	public void readAdditional(FriendlyByteBuf buffer) {}
-
-	public void writeAdditional(JsonObject json) {}
-
-	public void writeAdditional(FriendlyByteBuf buffer) {}
 	
 	public static class ManualCombinationRecipeParams {
 		protected ResourceLocation recipeTypeID;
-		protected Ingredient offhandIngredient;
 		protected Ingredient mainhandIngredient;
-		protected LootTable recipeLootTable;
-		protected NonNullList<ItemStack> recipeOutput;
+		protected Ingredient offhandIngredient;
 		protected int combinationDuration;
 		
 		public ManualCombinationRecipeParams( ResourceLocation recipeTypeID,
-											  Ingredient offhandIngredient,
 											  Ingredient mainhandIngredient,
-											  LootTable recipeLootTable,
-											  NonNullList<ItemStack> recipeOutput,
+											  Ingredient offhandIngredient,
 											  int combinationDuration) {
 			this.recipeTypeID = recipeTypeID;
-			this.offhandIngredient = offhandIngredient;
 			this.mainhandIngredient = mainhandIngredient;
-			this.recipeLootTable = recipeLootTable;
-			this.recipeOutput = recipeOutput;
+			this.offhandIngredient = offhandIngredient;
 			this.combinationDuration = combinationDuration;
 		}
 		
 		public ManualCombinationRecipeParams(ResourceLocation recipeTypeID) {
 			this.recipeTypeID = recipeTypeID;
-			this.offhandIngredient = Ingredient.EMPTY;
 			this.mainhandIngredient = Ingredient.EMPTY;
-			this.recipeLootTable = LootTable.EMPTY;
-			this.recipeOutput = NonNullList.create();
+			this.offhandIngredient = Ingredient.EMPTY;
 			this.combinationDuration = 0;
 		}
 		

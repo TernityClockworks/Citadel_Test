@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import com.github.ternityclockworks.eurekaarcana.EurekaArcana;
 import com.github.ternityclockworks.eurekaarcana.server.recipe.MechanicalDisassemblyRecipe;
 //import com.github.ternityclockworks.eurekaarcana.util.Lang;
+import com.github.ternityclockworks.eurekaarcana.util.Lang;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -25,23 +26,22 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 /**
- * Heavily based on Create's AllRecipeTypes enum for organization.
+ * Heavily based on Create's AllRecipeTypes for organization.
  * See <a href="https://github.com/Creators-of-Create/Create/blob/mc1.20.1/dev/src/main/java/com/simibubi/create/AllRecipeTypes.java"> Create AllRecipeTypes</a>
  */
 public enum EurekaRecipeTypes implements IRecipeTypeInfo {
 
-	MECHANICAL_DISASSEMBLY(MechanicalDisassemblyRecipe::new);
+	MECHANICAL_DISASSEMBLY(MechanicalDisassemblyRecipe.Serializer::new);
 	
-	private final ResourceLocation recipeTypeID;
+	private final ResourceLocation recipeID;
 	private final RegistryObject<RecipeSerializer<?>> serializerObject;
 	@Nullable
 	private final RegistryObject<RecipeType<?>> typeObject;
 	private final Supplier<RecipeType<?>> type;
 
 	EurekaRecipeTypes(Supplier<RecipeSerializer<?>> serializerSupplier, Supplier<RecipeType<?>> typeSupplier, boolean registerType) {
-		//String name = Lang.asId(name());
-		String name = name();
-		recipeTypeID = EurekaArcana.asResource(name);
+		String name = Lang.asId(name());
+		recipeID = EurekaArcana.asResource(name);
 		serializerObject = Registers.SERIALIZER_REGISTER.register(name, serializerSupplier);
 		if (registerType) {
 			typeObject = Registers.TYPE_REGISTER.register(name, typeSupplier);
@@ -53,11 +53,10 @@ public enum EurekaRecipeTypes implements IRecipeTypeInfo {
 	}
 
 	EurekaRecipeTypes(Supplier<RecipeSerializer<?>> serializerSupplier) {
-		//String name = Lang.asId(name());
-		String name = name();
-		recipeTypeID = EurekaArcana.asResource(name);
+		String name = Lang.asId(name());
+		recipeID = EurekaArcana.asResource(name);
 		serializerObject = Registers.SERIALIZER_REGISTER.register(name, serializerSupplier);
-		typeObject = Registers.TYPE_REGISTER.register(name, () -> RecipeType.simple(recipeTypeID));
+		typeObject = Registers.TYPE_REGISTER.register(name, () -> RecipeType.simple(recipeID));
 		type = typeObject;
 	}
 	
@@ -69,7 +68,7 @@ public enum EurekaRecipeTypes implements IRecipeTypeInfo {
 
 	@Override
 	public ResourceLocation getId() {
-		return recipeTypeID;
+		return recipeID;
 	}
 
 	@SuppressWarnings("unchecked")
