@@ -42,9 +42,9 @@ public enum EurekaRecipeTypes implements IRecipeTypeInfo {
 	EurekaRecipeTypes(Supplier<RecipeSerializer<?>> serializerSupplier, Supplier<RecipeType<?>> typeSupplier, boolean registerType) {
 		String name = Lang.asId(name());
 		recipeID = EurekaArcana.asResource(name);
-		serializerObject = Registers.SERIALIZER_REGISTER.register(name, serializerSupplier);
+		serializerObject = Registers.RECIPE_SERIALIZERS.register(name, serializerSupplier);
 		if (registerType) {
-			typeObject = Registers.TYPE_REGISTER.register(name, typeSupplier);
+			typeObject = Registers.RECIPE_TYPES.register(name, typeSupplier);
 			type = typeObject;
 		} else {
 			typeObject = null;
@@ -55,15 +55,15 @@ public enum EurekaRecipeTypes implements IRecipeTypeInfo {
 	EurekaRecipeTypes(Supplier<RecipeSerializer<?>> serializerSupplier) {
 		String name = Lang.asId(name());
 		recipeID = EurekaArcana.asResource(name);
-		serializerObject = Registers.SERIALIZER_REGISTER.register(name, serializerSupplier);
-		typeObject = Registers.TYPE_REGISTER.register(name, () -> RecipeType.simple(recipeID));
+		serializerObject = Registers.RECIPE_SERIALIZERS.register(name, serializerSupplier);
+		typeObject = Registers.RECIPE_TYPES.register(name, () -> RecipeType.simple(recipeID));
 		type = typeObject;
 	}
 	
 	public static void register(IEventBus modEventBus) {
 		ShapedRecipe.setCraftingSize(9, 9);
-		Registers.SERIALIZER_REGISTER.register(modEventBus);
-		Registers.TYPE_REGISTER.register(modEventBus);
+		Registers.RECIPE_SERIALIZERS.register(modEventBus);
+		Registers.RECIPE_TYPES.register(modEventBus);
 	}
 
 	@Override
@@ -89,8 +89,8 @@ public enum EurekaRecipeTypes implements IRecipeTypeInfo {
 	}
 	
 	private static class Registers {
-		private static final DeferredRegister<RecipeSerializer<?>> SERIALIZER_REGISTER = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, EurekaArcana.MODID);
-		private static final DeferredRegister<RecipeType<?>> TYPE_REGISTER = DeferredRegister.create(Registries.RECIPE_TYPE, EurekaArcana.MODID);
+		private static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, EurekaArcana.MODID);
+		private static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(Registries.RECIPE_TYPE, EurekaArcana.MODID);
 	}
 
 }
