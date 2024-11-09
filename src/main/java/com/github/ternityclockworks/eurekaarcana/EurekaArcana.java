@@ -3,13 +3,16 @@ package com.github.ternityclockworks.eurekaarcana;
 import com.github.ternityclockworks.eurekaarcana.client.ClientProxy;
 import com.github.ternityclockworks.eurekaarcana.client.config.EurekaClientConfig;
 import com.github.ternityclockworks.eurekaarcana.server.CommonProxy;
+import com.github.ternityclockworks.eurekaarcana.server.item.EurekaItemColorRegistry;
 import com.github.ternityclockworks.eurekaarcana.server.item.EurekaItemRegistry;
 import com.github.ternityclockworks.eurekaarcana.server.misc.*;
+import com.github.ternityclockworks.eurekaarcana.server.recipe.EurekaRecipeRegistry;
 import com.github.ternityclockworks.eurekaarcana.datagen.DataGeneration;
 import com.mojang.logging.LogUtils;
 
 import mcjty.theoneprobe.ForgeEventHandlers;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
@@ -23,6 +26,7 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.resources.ResourceLocation;
 
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
@@ -80,8 +84,10 @@ public class EurekaArcana
         //MinecraftForge.EVENT_BUS.register(new CommonEvents());
         EurekaItemRegistry.ITEMS.register(modEventBus);
         EurekaCreativeTabRegistry.CREATIVE_TABS.register(modEventBus);
+        EurekaRecipeRegistry.register(modEventBus);
         
         modEventBus.addListener(DataGeneration::generate);
+        modEventBus.addListener(EurekaItemColorRegistry::register);
         
         //PROXY.commonInit();
         

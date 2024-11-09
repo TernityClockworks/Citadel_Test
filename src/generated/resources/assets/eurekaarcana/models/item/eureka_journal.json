@@ -1,6 +1,7 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "eurekaarcana:item/eureka_journal"
+    "layer0": "eurekaarcana:item/eureka_journal_strap",
+    "layer1": "eurekaarcana:item/eureka_journal"
   }
 }

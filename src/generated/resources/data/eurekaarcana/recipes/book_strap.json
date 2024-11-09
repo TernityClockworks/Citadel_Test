@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "eureka",
+  "key": {
+    "G": {
+      "tag": "forge:ingots/gold"
+    },
+    "L": {
+      "tag": "forge:leather"
+    }
+  },
+  "pattern": [
+    " LL",
+    "L L",
+    "GL "
+  ],
+  "result": {
+    "item": "eurekaarcana:book_strap"
+  },
+  "show_notification": true
+}

@@ -1,16 +1,13 @@
-package com.github.ternityclockworks.eurekaarcana.server.recipe;
+package com.github.ternityclockworks.eurekaarcana.server.recipe.combination;
+
+import com.github.ternityclockworks.eurekaarcana.server.recipe.EurekaRecipeRegistry;
+import com.github.ternityclockworks.eurekaarcana.server.recipe.combination.ManualCombinationRecipe.CombinationInv;
 
 import java.util.List;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import com.github.ternityclockworks.eurekaarcana.server.recipe.ManualCombinationRecipe.ManualCombinationRecipeParams;
-import com.github.ternityclockworks.eurekaarcana.server.recipe.MechanicalDisassemblyRecipe.CombinationInv;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.github.ternityclockworks.eurekaarcana.server.recipe.EurekaRecipeTypes;
-
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -19,24 +16,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.LootTable.Serializer;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.wrapper.RecipeWrapper;
 
 @ParametersAreNonnullByDefault
 public class MechanicalDisassemblyRecipe extends ManualCombinationRecipe<CombinationInv> {
 	
 	public MechanicalDisassemblyRecipe(ManualCombinationRecipeParams params) {
-		super(EurekaRecipeTypes.MECHANICAL_DISASSEMBLY, params);
-	}
-
-	@Override
-	public boolean matches(CombinationInv inv, Level worldIn) {
-		return mainhandIngredient.test(inv.getItem(0));
+		super(EurekaRecipeRegistry.MECHANICAL_DISASSEMBLY, params);
 	}
 	
 	public static boolean canCombine(Level world, ItemStack stack) {
@@ -54,22 +41,12 @@ public class MechanicalDisassemblyRecipe extends ManualCombinationRecipe<Combina
 
 	public static List<Recipe<CombinationInv>> getMatchingRecipes(Level world, ItemStack stack) {
 		return world.getRecipeManager()
-			.getRecipesFor(EurekaRecipeTypes.MECHANICAL_DISASSEMBLY.getType(), new CombinationInv(stack), world);
+			.getRecipesFor(EurekaRecipeRegistry.MECHANICAL_DISASSEMBLY.getType(), new CombinationInv(stack), world);
 	}
 	
-	@Override
 	public NonNullList<ItemStack> rollRecipeOutput() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	public static class CombinationInv extends RecipeWrapper {
-		// Player inventory main hand
-		public CombinationInv(ItemStack stack) {
-			super(new ItemStackHandler(1));
-			inv.setStackInSlot(0, stack);
-		}
-
 	}
 	
 	@Override

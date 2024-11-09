@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_book": {
+    "has_gold": {
       "conditions": {
         "items": [
           {
-            "tag": "minecraft:lectern_books"
+            "tag": "forge:ingots/gold"
           }
         ]
       },
@@ -13,20 +13,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "eurekaarcana:eureka_journal"
+        "recipe": "eurekaarcana:book_strap"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_book",
+      "has_gold",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "eurekaarcana:eureka_journal"
+      "eurekaarcana:book_strap"
     ]
   },
   "sends_telemetry_event": false

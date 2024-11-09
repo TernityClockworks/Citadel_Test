@@ -1,6 +1,8 @@
 package com.github.ternityclockworks.eurekaarcana.datagen.recipes;
 
+import com.github.ternityclockworks.eurekaarcana.EurekaArcana;
 import com.github.ternityclockworks.eurekaarcana.server.item.EurekaItemRegistry;
+import com.github.ternityclockworks.eurekaarcana.server.recipe.EurekaRecipeRegistry;
 
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
@@ -20,11 +22,18 @@ public class EurekaRecipes extends RecipeProvider {
 
     @Override
     protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, EurekaItemRegistry.EUREKA_JOURNAL.get())
-                .requires(ItemTags.LECTERN_BOOKS)
-                .requires(ItemTags.FLOWERS)
-                .unlockedBy("has_book", InventoryChangeTrigger.TriggerInstance.hasItems(
-                        ItemPredicate.Builder.item().of(ItemTags.LECTERN_BOOKS).build()))
-                .save(consumer);
+    	ShapedRecipeBuilder.shaped(RecipeCategory.MISC, EurekaItemRegistry.BOOK_STRAP.get())
+    		.pattern(" LL")
+    		.pattern("L L")
+    		.pattern("GL ")
+    		.define('L', Tags.Items.LEATHER)
+    		.define('G', Tags.Items.INGOTS_GOLD)
+    		.group("eureka")
+    		.unlockedBy("has_gold", InventoryChangeTrigger.TriggerInstance.hasItems(
+                    ItemPredicate.Builder.item().of(Tags.Items.INGOTS_GOLD).build()))
+            .save(consumer);
+        
+        SpecialRecipeBuilder.special(EurekaRecipeRegistry.BOOK_STRAP_DYEING.getSerializer()).save(consumer, EurekaArcana.MODID + ":" + "book_strap_dyeing");
+        SpecialRecipeBuilder.special(EurekaRecipeRegistry.JOURNAL_DYEING.getSerializer()).save(consumer, EurekaArcana.MODID + ":" + "journal_dyeing");
     }
 }

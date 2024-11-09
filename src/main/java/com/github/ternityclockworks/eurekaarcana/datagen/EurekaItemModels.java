@@ -15,7 +15,11 @@ public class EurekaItemModels extends ItemModelProvider {
     @Override
     protected void registerModels() {
         //withExistingParent(EurekaItemRegistry.EUREKA_JOURNAL.getId().getPath(), mcLoc("item/generated"));
-    	basicItem(EurekaItemRegistry.EUREKA_JOURNAL.get());
+    	basicItem(EurekaItemRegistry.EUREKA_JOURNAL.get())
+    		.texture("layer0",EurekaArcana.MODID + ":" + "item/eureka_journal_strap")
+    		.texture("layer1",EurekaArcana.MODID + ":" + "item/eureka_journal");
+    	basicItem(EurekaItemRegistry.BOOK_STRAP.get())
+    		.texture("layer1",EurekaArcana.MODID + ":" + "item/book_strap_buckle");
     	basicItem(EurekaItemRegistry.BROKEN_MECHANISM.get());
     }
 }

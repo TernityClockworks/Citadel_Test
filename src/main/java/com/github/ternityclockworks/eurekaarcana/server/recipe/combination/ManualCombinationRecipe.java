@@ -1,22 +1,19 @@
-package com.github.ternityclockworks.eurekaarcana.server.recipe;
+package com.github.ternityclockworks.eurekaarcana.server.recipe.combination;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import com.google.gson.JsonObject;
+import com.github.ternityclockworks.eurekaarcana.server.recipe.IRecipeTypeInfo;
 
 import net.minecraft.world.Container;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.RecipeWrapper;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -80,9 +77,12 @@ public abstract class ManualCombinationRecipe<T extends Container> implements Re
 	public NonNullList<ItemStack> getRecipeOutput() {
 		return recipeOutput;
 	}
-	
-	public abstract NonNullList<ItemStack> rollRecipeOutput();
 
+	@Override
+	public boolean matches(T inv, Level worldIn) {
+		return mainhandIngredient.test(inv.getItem(0));
+	}
+	
 	@Override
 	public ItemStack assemble(T inv, RegistryAccess registryAccess) {
 		return getResultItem(registryAccess);
@@ -96,6 +96,10 @@ public abstract class ManualCombinationRecipe<T extends Container> implements Re
 	@Override
 	public ItemStack getResultItem(RegistryAccess registryAccess) {
 		return recipeOutput.get(0);
+	}
+	
+	public void setRecipeOutput(NonNullList<ItemStack> recipeOutput) {
+		this.recipeOutput = recipeOutput;
 	}
 
 	@Override
@@ -123,6 +127,15 @@ public abstract class ManualCombinationRecipe<T extends Container> implements Re
 		return typeInfo;
 	}
 	
+	public static class CombinationInv extends RecipeWrapper {
+		// Player inventory main hand
+		public CombinationInv(ItemStack stack) {
+			super(new ItemStackHandler(1));
+			inv.setStackInSlot(0, stack);
+		}
+
+	}
+	
 	public static class ManualCombinationRecipeParams {
 		protected ResourceLocation recipeTypeID;
 		protected Ingredient mainhandIngredient;
@@ -147,7 +160,4 @@ public abstract class ManualCombinationRecipe<T extends Container> implements Re
 		}
 		
 	}
-	
-	
-
 }

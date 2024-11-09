@@ -24,6 +24,7 @@ public class EurekaCreativeTabRegistry {
             .withTabsBefore(CreativeModeTabs.COMBAT)
             .displayItems((enabledFeatures, output) -> {
                 add(output, EurekaItemRegistry.EUREKA_JOURNAL.get());
+                add(output, EurekaItemRegistry.BOOK_STRAP.get());
                 add(output, EurekaItemRegistry.BROKEN_MECHANISM.get());
             })
             .build());

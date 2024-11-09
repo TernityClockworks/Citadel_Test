@@ -32,27 +32,28 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.lang.Math;
 
 import com.github.ternityclockworks.eurekaarcana.EurekaArcana;
 
 public class EurekaItemRegistry {
-    public static final Rarity EXAMPLE_RARITY = Rarity.create("eureka:example", style -> style.withColor(Color.HSBtoRGB((System.currentTimeMillis() % 5000) / 5000F, 1f, 1F)));
-    
     //public static final EurekaArmorMaterial EXAMPLE_ARMOR_MATERIAL = new EurekaArmorMaterial("example", 20, new int[]{2, 3, 2, 2}, 25, SoundEvents.ARMOR_EQUIP_LEATHER, 0F);
     
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, EurekaArcana.MODID);
     //public static final RegistryObject<Item> ADVANCEMENT_TAB_ICON = ITEMS.register("advancement_tab_icon", () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
 
-    public static final RegistryObject<Item> EUREKA_JOURNAL = ITEMS.register("eureka_journal", () -> new Item(new Item.Properties()));
-    public static final RegistryObject<Item> BROKEN_MECHANISM = ITEMS.register("broken_mechanism", () -> new Item(new Item.Properties()));
+    //public static final RegistryObject<Item> EUREKA_JOURNAL = ITEMS.register("eureka_journal", () -> new Item(new Item.Properties().rarity(EXAMPLE_RARITY).stacksTo(1)));
+    public static final RegistryObject<Item> EUREKA_JOURNAL = ITEMS.register("eureka_journal", () -> new EurekaJournalItem());
+    public static final RegistryObject<Item> BROKEN_MECHANISM = ITEMS.register("broken_mechanism", () -> new Item(new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> BOOK_STRAP = ITEMS.register("book_strap", () -> new BookStrapItem());
 
     //static {
     //    spawnEgg("example", EurekaEntityRegistry.EXAMPLE, 0X433B4A, 0X0060EF);
     //}
 
-    private static void spawnEgg(String entityName, RegistryObject type, int color1, int color2) {
-        RegistryObject<Item> item = ITEMS.register("spawn_egg_" + entityName, () -> new ForgeSpawnEggItem(type, color1, color2, new Item.Properties()));
-    }
+    //private static void spawnEgg(String entityName, RegistryObject type, int color1, int color2) {
+       // RegistryObject<Item> item = ITEMS.register("spawn_egg_" + entityName, () -> new ForgeSpawnEggItem(type, color1, color2, new Item.Properties()));
+    //}
 
     public static void setup() {
         // Set armor materials & dispenser behavior

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "eurekaarcana:item/book_strap",
+    "layer1": "eurekaarcana:item/book_strap_buckle"
+  }
+}

@@ -13,7 +13,8 @@ public class EurekaLanguageProvider extends LanguageProvider {
 
     @Override
     protected void addTranslations() {
-        add(EurekaItemRegistry.EUREKA_JOURNAL.get(), "Eureka! Mod Journal");
+    	add(EurekaItemRegistry.BOOK_STRAP.get(), "Book Strap");
+        add(EurekaItemRegistry.EUREKA_JOURNAL.get(), "Discovery Journal");
         add(EurekaItemRegistry.BROKEN_MECHANISM.get(), "Broken Mechanism");
     }
 }
