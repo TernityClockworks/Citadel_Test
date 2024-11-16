@@ -11,9 +11,7 @@
     }
   },
   "pattern": [
-    " LL",
-    "L L",
-    "GL "
+    "GL"
   ],
   "result": {
     "item": "eurekaarcana:book_strap"

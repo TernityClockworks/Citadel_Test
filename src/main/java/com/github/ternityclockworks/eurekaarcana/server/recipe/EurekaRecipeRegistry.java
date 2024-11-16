@@ -6,6 +6,9 @@ import java.util.function.Supplier;
 import org.jetbrains.annotations.Nullable;
 
 import com.github.ternityclockworks.eurekaarcana.EurekaArcana;
+import com.github.ternityclockworks.eurekaarcana.server.recipe.combination.BookStrapCombinationRecipe;
+import com.github.ternityclockworks.eurekaarcana.server.recipe.combination.CombinationRecipeBuilder.CombinationRecipeFactory;
+import com.github.ternityclockworks.eurekaarcana.server.recipe.combination.CombinationRecipeSerializer;
 import com.github.ternityclockworks.eurekaarcana.server.recipe.combination.MechanicalDisassemblyRecipe;
 import com.github.ternityclockworks.eurekaarcana.server.recipe.dyeing.BookStrapDyeingRecipe;
 import com.github.ternityclockworks.eurekaarcana.server.recipe.dyeing.JournalDyeingRecipe;
@@ -33,8 +36,8 @@ public enum EurekaRecipeRegistry implements IRecipeTypeInfo {
 
 	BOOK_STRAP_DYEING(() -> new SimpleCraftingRecipeSerializer<>(BookStrapDyeingRecipe::new), () -> RecipeType.CRAFTING, false),
 	JOURNAL_DYEING(() -> new SimpleCraftingRecipeSerializer<>(JournalDyeingRecipe::new), () -> RecipeType.CRAFTING, false),
-	MECHANICAL_DISASSEMBLY(MechanicalDisassemblyRecipe.Serializer::new),
-	BOOK_STRAP_COMBINATION(MechanicalDisassemblyRecipe.Serializer::new);
+	BOOK_STRAP_COMBINATION(BookStrapCombinationRecipe::new),
+	MECHANICAL_DISASSEMBLY(MechanicalDisassemblyRecipe::new);
 	
 	private final ResourceLocation recipeID;
 	private final RegistryObject<RecipeSerializer<?>> serializerObject;
@@ -61,6 +64,11 @@ public enum EurekaRecipeRegistry implements IRecipeTypeInfo {
 		serializerObject = Registers.RECIPE_SERIALIZERS.register(name, serializerSupplier);
 		typeObject = Registers.RECIPE_TYPES.register(name, () -> RecipeType.simple(recipeID));
 		type = typeObject;
+	}
+	
+	EurekaRecipeRegistry(CombinationRecipeFactory<?> factory) {
+		this(() -> new CombinationRecipeSerializer<>(factory));
+		
 	}
 	
 	public static void register(IEventBus modEventBus) {

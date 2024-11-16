@@ -14,18 +14,16 @@ import net.minecraftforge.common.Tags;
 
 import java.util.function.Consumer;
 
-public class EurekaRecipes extends RecipeProvider {
+public class CraftingRecipeGen extends EurekaRecipeProvider {
 
-    public EurekaRecipes(PackOutput packOutput) {
+    public CraftingRecipeGen(PackOutput packOutput) {
         super(packOutput);
     }
 
     @Override
     protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
     	ShapedRecipeBuilder.shaped(RecipeCategory.MISC, EurekaItemRegistry.BOOK_STRAP.get())
-    		.pattern(" LL")
-    		.pattern("L L")
-    		.pattern("GL ")
+    		.pattern("GL")
     		.define('L', Tags.Items.LEATHER)
     		.define('G', Tags.Items.INGOTS_GOLD)
     		.group("eureka")

@@ -3,6 +3,7 @@ package com.github.ternityclockworks.eurekaarcana.server.recipe.combination;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import com.github.ternityclockworks.eurekaarcana.server.recipe.IRecipeTypeInfo;
+import com.github.ternityclockworks.eurekaarcana.server.recipe.combination.CombinationRecipeBuilder.CombinationRecipeParams;
 
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
@@ -25,19 +26,19 @@ import net.minecraft.world.item.crafting.RecipeType;
  * @param <T>
  */
 @ParametersAreNonnullByDefault
-public abstract class ManualCombinationRecipe<T extends Container> implements Recipe<T>{
+public abstract class CombinationRecipe<T extends Container> implements Recipe<T>{
 
 	protected ResourceLocation recipeID; // Resource for both the recipe and loot table
 	protected Ingredient mainhandIngredient;
 	protected Ingredient offhandIngredient;
-	protected NonNullList<ItemStack> recipeOutput = NonNullList.create();;
+	protected NonNullList<CombinationOutput> recipeOutput = NonNullList.create();;
 	protected int combinationDuration;
 
 	private RecipeType<?> type;
 	private RecipeSerializer<?> serializer;
 	private IRecipeTypeInfo typeInfo;
 	
-	public ManualCombinationRecipe( IRecipeTypeInfo typeInfo, ManualCombinationRecipeParams params) {
+	public CombinationRecipe( IRecipeTypeInfo typeInfo, CombinationRecipeParams params) {
 		this.typeInfo = typeInfo;
 		this.serializer = typeInfo.getSerializer();
 		this.type = typeInfo.getType();
@@ -68,14 +69,24 @@ public abstract class ManualCombinationRecipe<T extends Container> implements Re
 		return offhandIngredient;
 	}
 	
+	public int getCombinationDuration() {
+		return combinationDuration;
+	}
+	
 	public LootTable getLootTable() {
 		LootTable table = LootTable.EMPTY;
 		table.setLootTableId(recipeID);
 		return table;
 	}
 	
-	public NonNullList<ItemStack> getRecipeOutput() {
+	public NonNullList<CombinationOutput> getRecipeOutput() {
 		return recipeOutput;
+	}
+	
+	@Override
+	public ItemStack getResultItem(RegistryAccess reg) {
+		// TODO roll output
+		return ItemStack.EMPTY;
 	}
 
 	@Override
@@ -93,12 +104,13 @@ public abstract class ManualCombinationRecipe<T extends Container> implements Re
 		return true;
 	}
 
-	@Override
-	public ItemStack getResultItem(RegistryAccess registryAccess) {
-		return recipeOutput.get(0);
-	}
+	// TODO roll results from loot table
+//	@Override
+//	public ItemStack getResultItem(RegistryAccess registryAccess) {
+//		return recipeOutput.get(0);
+//	}
 	
-	public void setRecipeOutput(NonNullList<ItemStack> recipeOutput) {
+	public void setRecipeOutput(NonNullList<CombinationOutput> recipeOutput) {
 		this.recipeOutput = recipeOutput;
 	}
 
@@ -134,30 +146,5 @@ public abstract class ManualCombinationRecipe<T extends Container> implements Re
 			inv.setStackInSlot(0, stack);
 		}
 
-	}
-	
-	public static class ManualCombinationRecipeParams {
-		protected ResourceLocation recipeTypeID;
-		protected Ingredient mainhandIngredient;
-		protected Ingredient offhandIngredient;
-		protected int combinationDuration;
-		
-		public ManualCombinationRecipeParams( ResourceLocation recipeTypeID,
-											  Ingredient mainhandIngredient,
-											  Ingredient offhandIngredient,
-											  int combinationDuration) {
-			this.recipeTypeID = recipeTypeID;
-			this.mainhandIngredient = mainhandIngredient;
-			this.offhandIngredient = offhandIngredient;
-			this.combinationDuration = combinationDuration;
-		}
-		
-		public ManualCombinationRecipeParams(ResourceLocation recipeTypeID) {
-			this.recipeTypeID = recipeTypeID;
-			this.mainhandIngredient = Ingredient.EMPTY;
-			this.offhandIngredient = Ingredient.EMPTY;
-			this.combinationDuration = 0;
-		}
-		
 	}
 }

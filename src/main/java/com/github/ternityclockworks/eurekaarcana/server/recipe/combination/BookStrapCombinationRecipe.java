@@ -5,7 +5,8 @@ import java.util.List;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import com.github.ternityclockworks.eurekaarcana.server.recipe.EurekaRecipeRegistry;
-import com.github.ternityclockworks.eurekaarcana.server.recipe.combination.ManualCombinationRecipe.CombinationInv;
+import com.github.ternityclockworks.eurekaarcana.server.recipe.combination.CombinationRecipe.CombinationInv;
+import com.github.ternityclockworks.eurekaarcana.server.recipe.combination.CombinationRecipeBuilder.CombinationRecipeParams;
 import com.google.gson.JsonObject;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -18,9 +19,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 @ParametersAreNonnullByDefault
-public class BookStrapCombinationRecipe extends ManualCombinationRecipe<CombinationInv> {
+public class BookStrapCombinationRecipe extends CombinationRecipe<CombinationInv> {
 	
-	public BookStrapCombinationRecipe(ManualCombinationRecipeParams params) {
+	public BookStrapCombinationRecipe(CombinationRecipeParams params) {
 		super(EurekaRecipeRegistry.BOOK_STRAP_COMBINATION, params);
 	}
 	
@@ -28,13 +29,13 @@ public class BookStrapCombinationRecipe extends ManualCombinationRecipe<Combinat
 		return !getMatchingRecipes(world, stack).isEmpty();
 	}
 
-	public static ItemStack combine(Level world, Vec3 position, ItemStack offhandItem, ItemStack mainhandItem) {
-		List<Recipe<CombinationInv>> matchingRecipes = getMatchingRecipes(world, offhandItem);
+	public static ItemStack combine(Level world, ItemStack stack) {
+		List<Recipe<CombinationInv>> matchingRecipes = getMatchingRecipes(world, stack);
 		if (!matchingRecipes.isEmpty())
 			return matchingRecipes.get(0) // Craft result
-				.assemble(new CombinationInv(offhandItem), world.registryAccess())
+				.assemble(new CombinationInv(stack), world.registryAccess())
 				.copy();
-		return offhandItem; // Cannot combine
+		return stack; // Cannot combine
 	}
 
 	public static List<Recipe<CombinationInv>> getMatchingRecipes(Level world, ItemStack stack) {
@@ -46,33 +47,4 @@ public class BookStrapCombinationRecipe extends ManualCombinationRecipe<Combinat
 	public ResourceLocation getId() {
 		return this.getId();
 	}
-
-	public static class Serializer implements RecipeSerializer<BookStrapCombinationRecipe> {
-        
-		public BookStrapCombinationRecipe fromJson(ResourceLocation recipeID, JsonObject recipeJson) {
-            Ingredient mainhandIngredient = Ingredient.fromJson(GsonHelper.getAsJsonObject(recipeJson, "mainhandIngredient"));
-            Ingredient offhandIngredient = Ingredient.fromJson(GsonHelper.getAsJsonObject(recipeJson, "offhandIngredient"));
-            int combinationDuration = GsonHelper.getAsInt(recipeJson, "combinationDuration");
-            return new BookStrapCombinationRecipe( new ManualCombinationRecipeParams(recipeID,
-            																		 mainhandIngredient,
-            																		 offhandIngredient,
-            																		 combinationDuration));
-        }
-
-        public BookStrapCombinationRecipe fromNetwork(ResourceLocation recipeID, FriendlyByteBuf buf) {
-            Ingredient mainhandIngredient = Ingredient.fromNetwork(buf);
-            Ingredient offhandIngredient = Ingredient.fromNetwork(buf);
-            int combinationDuration = buf.readInt();
-            return new BookStrapCombinationRecipe( new ManualCombinationRecipeParams(recipeID,
-					  																 mainhandIngredient,
-					  																 offhandIngredient,
-					  																 combinationDuration));
-        }
-
-        public void toNetwork(FriendlyByteBuf buf, BookStrapCombinationRecipe recipe) {
-            recipe.mainhandIngredient.toNetwork(buf);
-            recipe.offhandIngredient.toNetwork(buf);
-            buf.writeInt(recipe.combinationDuration);
-        }
-    }
 }

@@ -7,6 +7,8 @@ import com.github.ternityclockworks.eurekaarcana.server.item.EurekaItemColorRegi
 import com.github.ternityclockworks.eurekaarcana.server.item.EurekaItemRegistry;
 import com.github.ternityclockworks.eurekaarcana.server.misc.*;
 import com.github.ternityclockworks.eurekaarcana.server.recipe.EurekaRecipeRegistry;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.github.ternityclockworks.eurekaarcana.datagen.DataGeneration;
 import com.mojang.logging.LogUtils;
 
@@ -54,7 +56,10 @@ import org.slf4j.Logger;
 public class EurekaArcana
 {
     public static final String MODID = "eurekaarcana";
-    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LogUtils.getLogger();
+    public static final Gson GSON = new GsonBuilder().setPrettyPrinting()
+    		.disableHtmlEscaping()
+    		.create();
     
     public static CommonProxy PROXY = DistExecutor.runForDist(() -> ClientProxy::new, () -> CommonProxy::new);
     private static final String PROTOCOL_VERSION = Integer.toString(1);

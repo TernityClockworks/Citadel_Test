@@ -1,7 +1,8 @@
 package com.github.ternityclockworks.eurekaarcana.server.recipe.combination;
 
 import com.github.ternityclockworks.eurekaarcana.server.recipe.EurekaRecipeRegistry;
-import com.github.ternityclockworks.eurekaarcana.server.recipe.combination.ManualCombinationRecipe.CombinationInv;
+import com.github.ternityclockworks.eurekaarcana.server.recipe.combination.CombinationRecipe.CombinationInv;
+import com.github.ternityclockworks.eurekaarcana.server.recipe.combination.CombinationRecipeBuilder.CombinationRecipeParams;
 
 import java.util.List;
 
@@ -20,9 +21,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 @ParametersAreNonnullByDefault
-public class MechanicalDisassemblyRecipe extends ManualCombinationRecipe<CombinationInv> {
+public class MechanicalDisassemblyRecipe extends CombinationRecipe<CombinationInv> {
 	
-	public MechanicalDisassemblyRecipe(ManualCombinationRecipeParams params) {
+	public MechanicalDisassemblyRecipe(CombinationRecipeParams params) {
 		super(EurekaRecipeRegistry.MECHANICAL_DISASSEMBLY, params);
 	}
 	
@@ -53,34 +54,5 @@ public class MechanicalDisassemblyRecipe extends ManualCombinationRecipe<Combina
 	public ResourceLocation getId() {
 		return this.getId();
 	}
-
-	public static class Serializer implements RecipeSerializer<MechanicalDisassemblyRecipe> {
-        
-		public MechanicalDisassemblyRecipe fromJson(ResourceLocation recipeID, JsonObject recipeJson) {
-            Ingredient mainhandIngredient = Ingredient.fromJson(GsonHelper.getAsJsonObject(recipeJson, "mainhandIngredient"));
-            Ingredient offhandIngredient = Ingredient.fromJson(GsonHelper.getAsJsonObject(recipeJson, "offhandIngredient"));
-            int combinationDuration = GsonHelper.getAsInt(recipeJson, "combinationDuration");
-            return new MechanicalDisassemblyRecipe( new ManualCombinationRecipeParams(recipeID,
-            																	  mainhandIngredient,
-            																	  offhandIngredient,
-            																	  combinationDuration));
-        }
-
-        public MechanicalDisassemblyRecipe fromNetwork(ResourceLocation recipeID, FriendlyByteBuf buf) {
-            Ingredient mainhandIngredient = Ingredient.fromNetwork(buf);
-            Ingredient offhandIngredient = Ingredient.fromNetwork(buf);
-            int combinationDuration = buf.readInt();
-            return new MechanicalDisassemblyRecipe( new ManualCombinationRecipeParams(recipeID,
-					  mainhandIngredient,
-					  offhandIngredient,
-					  combinationDuration));
-        }
-
-        public void toNetwork(FriendlyByteBuf buf, MechanicalDisassemblyRecipe recipe) {
-            recipe.mainhandIngredient.toNetwork(buf);
-            recipe.offhandIngredient.toNetwork(buf);
-            buf.writeInt(recipe.combinationDuration);
-        }
-    }
 
 }

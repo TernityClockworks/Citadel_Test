@@ -1,10 +1,12 @@
 package com.github.ternityclockworks.eurekaarcana.server.recipe.dyeing;
 
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
+import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CustomRecipe;
@@ -29,7 +31,6 @@ public abstract class DyeingRecipe extends CustomRecipe {
 	@Override
 	public boolean matches(CraftingContainer inv, Level worldIn) {
 		boolean dyeableItemPresent = false;
-		boolean dyePresent = false;
 		for (int slot = 0; slot < inv.getContainerSize(); slot++) {
 			ItemStack slotStack = inv.getItem(slot);
 			if (slotStack.isEmpty()) {
@@ -40,13 +41,11 @@ public abstract class DyeingRecipe extends CustomRecipe {
 					return false;
 				}
 				dyeableItemPresent = true;
-			} else if (slotStack.is(Tags.Items.DYES)) {
-				dyePresent = true;
 			} else {
 				return false;
 			}
 		}
-		return dyeableItemPresent && dyePresent;
+		return dyeableItemPresent;
 	}
 
 	@Override
@@ -75,7 +74,7 @@ public abstract class DyeingRecipe extends CustomRecipe {
 				return ItemStack.EMPTY;
 			}
 		}
-		return !dyeableStack.isEmpty() && !dyeItems.isEmpty() ? dyeItem(dyeableStack, dyeItems) : ItemStack.EMPTY;
+		return !dyeableStack.isEmpty() ? dyeItem(dyeableStack, dyeItems) : ItemStack.EMPTY;
 	}
 	
 	@Override
@@ -83,8 +82,22 @@ public abstract class DyeingRecipe extends CustomRecipe {
 		return width * height >= 2; // Requires at least 2 slots
 	}
 
-	protected abstract boolean isDyeableItem(ItemStack stack);
+	protected boolean isDyeableItem(ItemStack stack) {
+		return stack.getItem() instanceof DyeableLeatherItem;
+	}
 	
-	protected abstract ItemStack dyeItem(ItemStack stack, List<DyeItem> dyeItems);
+	protected ItemStack dyeItem(ItemStack dyeableStack, List<DyeItem> dyeItems) {
+		if (!dyeItems.isEmpty()) {
+			return DyeableLeatherItem.dyeArmor(dyeableStack, dyeItems);
+		}
+		else { // Revert color if no dye is supplied to allow color clearing
+			ItemStack returnStack = dyeableStack.copy();
+			CompoundTag compoundtag = returnStack.getTagElement("display");
+		    if (compoundtag != null && compoundtag.contains("color")) {
+		    	compoundtag.remove("color");
+		    }
+			return returnStack;
+		}
+	}
 	
 }
