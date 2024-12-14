@@ -1,4 +1,4 @@
-package com.github.ternityclockworks.eurekaarcana.server.recipe.combination;
+package com.github.ternityclockworks.eurekaarcana.server.recipe;
 
 import com.github.ternityclockworks.eurekaarcana.EurekaArcana;
 import com.github.ternityclockworks.eurekaarcana.util.Pair;
@@ -19,9 +19,9 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class CombinationOutput {
+public class RollableOutput {
 
-	public static final CombinationOutput EMPTY = new CombinationOutput(ItemStack.EMPTY, 1);
+	public static final RollableOutput EMPTY = new RollableOutput(ItemStack.EMPTY, 1);
 
 	private static final Random r = new Random();
 	private final ItemStack stack;
@@ -29,12 +29,12 @@ public class CombinationOutput {
 
 	private Pair<ResourceLocation, Integer> compatDatagenOutput;
 
-	public CombinationOutput(ItemStack stack, float chance) {
+	public RollableOutput(ItemStack stack, float chance) {
 		this.stack = stack;
 		this.chance = chance;
 	}
 
-	public CombinationOutput(Pair<ResourceLocation, Integer> item, float chance) {
+	public RollableOutput(Pair<ResourceLocation, Integer> item, float chance) {
 		this.stack = ItemStack.EMPTY;
 		this.compatDatagenOutput = item;
 		this.chance = chance;
@@ -76,9 +76,9 @@ public class CombinationOutput {
 		return json;
 	}
 
-	public static CombinationOutput deserialize(JsonElement je) {
+	public static RollableOutput deserialize(JsonElement je) {
 		if (!je.isJsonObject())
-			throw new JsonSyntaxException("CombinationOutput must be a json object");
+			throw new JsonSyntaxException("RollableOutput must be a json object");
 
 		JsonObject json = je.getAsJsonObject();
 		String itemId = GsonHelper.getAsString(json, "item");
@@ -96,7 +96,7 @@ public class CombinationOutput {
 			}
 		}
 
-		return new CombinationOutput(itemstack, chance);
+		return new RollableOutput(itemstack, chance);
 	}
 
 	public void write(FriendlyByteBuf buf) {
@@ -104,8 +104,8 @@ public class CombinationOutput {
 		buf.writeFloat(getChance());
 	}
 
-	public static CombinationOutput read(FriendlyByteBuf buf) {
-		return new CombinationOutput(buf.readItem(), buf.readFloat());
+	public static RollableOutput read(FriendlyByteBuf buf) {
+		return new RollableOutput(buf.readItem(), buf.readFloat());
 	}
 
 }

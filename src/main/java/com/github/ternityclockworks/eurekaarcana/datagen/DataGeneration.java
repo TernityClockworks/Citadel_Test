@@ -28,8 +28,8 @@ public class DataGeneration {
         EurekaBlockTags blockTags = new EurekaBlockTags(packOutput, lookupProvider, event.getExistingFileHelper());
         generator.addProvider(event.includeServer(), blockTags);
         generator.addProvider(event.includeServer(), new EurekaItemTags(packOutput, lookupProvider, blockTags, event.getExistingFileHelper()));
-        generator.addProvider(event.includeServer(), new CraftingRecipeGen(packOutput));
-        //CombinationRecipeGen.registerAll(generator, packOutput);
+        generator.addProvider(event.includeServer(), new CraftingRecipeProvider(packOutput));
+        //CombinationRecipeProvider.registerAll(generator, packOutput);
         generator.addProvider(event.includeServer(), new LootTableProvider(packOutput, Collections.emptySet(),
                 List.of(new LootTableProvider.SubProviderEntry(EurekaLootTables::new, LootContextParamSets.BLOCK))));
     }

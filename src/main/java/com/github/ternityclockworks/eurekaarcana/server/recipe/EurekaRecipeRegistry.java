@@ -36,8 +36,9 @@ public enum EurekaRecipeRegistry implements IRecipeTypeInfo {
 
 	BOOK_STRAP_DYEING(() -> new SimpleCraftingRecipeSerializer<>(BookStrapDyeingRecipe::new), () -> RecipeType.CRAFTING, false),
 	JOURNAL_DYEING(() -> new SimpleCraftingRecipeSerializer<>(JournalDyeingRecipe::new), () -> RecipeType.CRAFTING, false),
-	BOOK_STRAP_COMBINATION(BookStrapCombinationRecipe::new),
-	MECHANICAL_DISASSEMBLY(MechanicalDisassemblyRecipe::new);
+	BOOK_STRAP_COMBINATION(BookStrapCombinationRecipe.Serializer::new),
+	MECHANICAL_DISASSEMBLY(MechanicalDisassemblyRecipe.Serializer::new)
+	;
 	
 	private final ResourceLocation recipeID;
 	private final RegistryObject<RecipeSerializer<?>> serializerObject;
@@ -64,11 +65,6 @@ public enum EurekaRecipeRegistry implements IRecipeTypeInfo {
 		serializerObject = Registers.RECIPE_SERIALIZERS.register(name, serializerSupplier);
 		typeObject = Registers.RECIPE_TYPES.register(name, () -> RecipeType.simple(recipeID));
 		type = typeObject;
-	}
-	
-	EurekaRecipeRegistry(CombinationRecipeFactory<?> factory) {
-		this(() -> new CombinationRecipeSerializer<>(factory));
-		
 	}
 	
 	public static void register(IEventBus modEventBus) {

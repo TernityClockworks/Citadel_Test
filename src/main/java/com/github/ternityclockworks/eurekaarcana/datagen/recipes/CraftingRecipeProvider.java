@@ -14,9 +14,9 @@ import net.minecraftforge.common.Tags;
 
 import java.util.function.Consumer;
 
-public class CraftingRecipeGen extends EurekaRecipeProvider {
+public class CraftingRecipeProvider extends EurekaRecipeProvider {
 
-    public CraftingRecipeGen(PackOutput packOutput) {
+    public CraftingRecipeProvider(PackOutput packOutput) {
         super(packOutput);
     }
 

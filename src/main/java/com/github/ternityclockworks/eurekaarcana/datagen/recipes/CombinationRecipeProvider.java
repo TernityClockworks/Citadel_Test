@@ -25,9 +25,9 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.fluids.FluidType;
 
-public abstract class CombinationRecipeGen extends EurekaRecipeProvider {
+public abstract class CombinationRecipeProvider extends EurekaRecipeProvider {
 
-	protected static final List<CombinationRecipeGen> GENERATORS = new ArrayList<>();
+	protected static final List<CombinationRecipeProvider> GENERATORS = new ArrayList<>();
 	protected static final int BUCKET = FluidType.BUCKET_VOLUME;
 	protected static final int BOTTLE = 250;
 
@@ -50,7 +50,7 @@ public abstract class CombinationRecipeGen extends EurekaRecipeProvider {
 		});
 	}
 
-	public CombinationRecipeGen(PackOutput generator) {
+	public CombinationRecipeProvider(PackOutput generator) {
 		super(generator);
 	}
 
@@ -127,11 +127,5 @@ public abstract class CombinationRecipeGen extends EurekaRecipeProvider {
 			return EurekaArcana.asResource(registryName.getPath() + suffix);
 		};
 	}
-
-//	@Override
-//	public String getName() {
-//		return "Eureka's Combination Recipes: " + getRecipeType().getId()
-//			.getPath();
-//	}
 
 }

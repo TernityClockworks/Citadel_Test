@@ -4,10 +4,16 @@ import java.util.List;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.github.ternityclockworks.eurekaarcana.server.recipe.EurekaRecipeRegistry;
+import com.github.ternityclockworks.eurekaarcana.server.recipe.IRecipeTypeInfo;
+import com.github.ternityclockworks.eurekaarcana.server.recipe.RollableOutput;
 import com.github.ternityclockworks.eurekaarcana.server.recipe.combination.CombinationRecipe.CombinationInv;
-import com.github.ternityclockworks.eurekaarcana.server.recipe.combination.CombinationRecipeBuilder.CombinationRecipeParams;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -21,8 +27,18 @@ import net.minecraft.world.phys.Vec3;
 @ParametersAreNonnullByDefault
 public class BookStrapCombinationRecipe extends CombinationRecipe<CombinationInv> {
 	
-	public BookStrapCombinationRecipe(CombinationRecipeParams params) {
-		super(EurekaRecipeRegistry.BOOK_STRAP_COMBINATION, params);
+	public BookStrapCombinationRecipe(
+			  ResourceLocation recipeID,
+			  Ingredient mainhandIngredient,
+			  Ingredient offhandIngredient,
+			  NonNullList<RollableOutput> recipeOutput,
+			  int combinationDuration) {
+		super(EurekaRecipeRegistry.BOOK_STRAP_COMBINATION,
+				recipeID,
+				mainhandIngredient,
+				offhandIngredient,
+				recipeOutput,
+				combinationDuration);
 	}
 	
 	public static boolean canCombine(Level world, ItemStack stack) {
@@ -46,5 +62,45 @@ public class BookStrapCombinationRecipe extends CombinationRecipe<CombinationInv
 	@Override
 	public ResourceLocation getId() {
 		return this.getId();
+	}
+	
+	public class Serializer<R extends CombinationRecipe<?>> implements RecipeSerializer<R> {
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public R fromJson(ResourceLocation recipeID, JsonObject jsonObj) {
+			Ingredient mainhandIngredient = Ingredient.EMPTY;
+			Ingredient offhandIngredient = Ingredient.EMPTY;
+			NonNullList<RollableOutput> recipeOutput = NonNullList.create();
+			int combinationDuration = 0;
+			
+			mainhandIngredient = Ingredient.fromJson(GsonHelper.getAsJsonObject(jsonObj, "mainhandIngredient"));
+
+			offhandIngredient = Ingredient.fromJson(GsonHelper.getAsJsonObject(jsonObj, "offhandIngredient"));
+			
+			for (JsonElement output : GsonHelper.getAsJsonArray(jsonObj, "recipeOutput")) {
+				recipeOutput.add(RollableOutput.deserialize(output.getAsJsonObject()));
+			}
+			
+			if (GsonHelper.isValidNode(jsonObj, "combinationTime"))
+				combinationDuration = GsonHelper.getAsInt(jsonObj, "combinationTime");
+			
+			//recipe = recipe.create(recipeID,mainhandIngredient,offhandIngredient,recipeOutput,combinationDuration);
+			
+			return (R) new BookStrapCombinationRecipe(recipeID,mainhandIngredient,offhandIngredient,recipeOutput,combinationDuration);
+		}
+
+		@Override
+		public @Nullable R fromNetwork(ResourceLocation p_44105_, FriendlyByteBuf p_44106_) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public void toNetwork(FriendlyByteBuf p_44101_, R p_44102_) {
+			// TODO Auto-generated method stub
+			
+		}
+		
 	}
 }

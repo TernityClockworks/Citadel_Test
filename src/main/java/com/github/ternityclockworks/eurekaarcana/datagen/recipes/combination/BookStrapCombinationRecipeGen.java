@@ -4,7 +4,7 @@ import java.util.function.Consumer;
 
 import com.github.ternityclockworks.eurekaarcana.EurekaArcana;
 import com.github.ternityclockworks.eurekaarcana.datagen.EurekaItemTags;
-import com.github.ternityclockworks.eurekaarcana.datagen.recipes.CombinationRecipeGen;
+import com.github.ternityclockworks.eurekaarcana.datagen.recipes.CombinationRecipeProvider;
 import com.github.ternityclockworks.eurekaarcana.datagen.recipes.EurekaRecipeProvider.GeneratedRecipe;
 import com.github.ternityclockworks.eurekaarcana.server.item.EurekaItemRegistry;
 import com.github.ternityclockworks.eurekaarcana.server.recipe.EurekaRecipeRegistry;
@@ -21,7 +21,7 @@ import net.minecraft.world.item.Items;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class BookStrapCombinationRecipeGen extends CombinationRecipeGen {
+public class BookStrapCombinationRecipeGen extends CombinationRecipeProvider {
 
 	GeneratedRecipe
 

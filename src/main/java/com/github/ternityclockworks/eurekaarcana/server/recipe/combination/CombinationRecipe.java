@@ -2,8 +2,13 @@ package com.github.ternityclockworks.eurekaarcana.server.recipe.combination;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.github.ternityclockworks.eurekaarcana.server.recipe.IRecipeTypeInfo;
-import com.github.ternityclockworks.eurekaarcana.server.recipe.combination.CombinationRecipeBuilder.CombinationRecipeParams;
+import com.github.ternityclockworks.eurekaarcana.server.recipe.RollableOutput;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
@@ -15,7 +20,9 @@ import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.RecipeWrapper;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 
@@ -23,30 +30,35 @@ import net.minecraft.world.item.crafting.RecipeType;
  * Basic template for all manual combination recipes.
  * Manual combination recipes refer to those which allow the player to craft by using an item in their main hand with an item in their off hand.
  * Based on Create's ProcessingRecipe abstract class.
- * @param <T>
  */
 @ParametersAreNonnullByDefault
 public abstract class CombinationRecipe<T extends Container> implements Recipe<T>{
 
 	protected ResourceLocation recipeID; // Resource for both the recipe and loot table
-	protected Ingredient mainhandIngredient;
-	protected Ingredient offhandIngredient;
-	protected NonNullList<CombinationOutput> recipeOutput = NonNullList.create();;
-	protected int combinationDuration;
+	protected Ingredient mainhandIngredient = Ingredient.EMPTY;
+	protected Ingredient offhandIngredient = Ingredient.EMPTY;
+	protected NonNullList<RollableOutput> recipeOutput = NonNullList.create();;
+	protected int combinationDuration = 0;
 
 	private RecipeType<?> type;
 	private RecipeSerializer<?> serializer;
 	private IRecipeTypeInfo typeInfo;
 	
-	public CombinationRecipe( IRecipeTypeInfo typeInfo, CombinationRecipeParams params) {
+	public CombinationRecipe( IRecipeTypeInfo typeInfo,
+							  ResourceLocation recipeID,
+							  Ingredient mainhandIngredient,
+							  Ingredient offhandIngredient,
+							  NonNullList<RollableOutput> recipeOutput,
+							  int combinationDuration) {
 		this.typeInfo = typeInfo;
 		this.serializer = typeInfo.getSerializer();
 		this.type = typeInfo.getType();
 		
-		this.recipeID = params.recipeTypeID;
-		this.mainhandIngredient = params.mainhandIngredient;
-		this.offhandIngredient = params.offhandIngredient;
-		this.combinationDuration = params.combinationDuration;
+		this.recipeID = recipeID;
+		this.mainhandIngredient = mainhandIngredient;
+		this.offhandIngredient = offhandIngredient;
+		this.recipeOutput = recipeOutput;
+		this.combinationDuration = combinationDuration;
 	}
 	
 	@Override
@@ -73,13 +85,7 @@ public abstract class CombinationRecipe<T extends Container> implements Recipe<T
 		return combinationDuration;
 	}
 	
-	public LootTable getLootTable() {
-		LootTable table = LootTable.EMPTY;
-		table.setLootTableId(recipeID);
-		return table;
-	}
-	
-	public NonNullList<CombinationOutput> getRecipeOutput() {
+	public NonNullList<RollableOutput> getRecipeOutput() {
 		return recipeOutput;
 	}
 	
@@ -110,7 +116,7 @@ public abstract class CombinationRecipe<T extends Container> implements Recipe<T
 //		return recipeOutput.get(0);
 //	}
 	
-	public void setRecipeOutput(NonNullList<CombinationOutput> recipeOutput) {
+	public void setRecipeOutput(NonNullList<RollableOutput> recipeOutput) {
 		this.recipeOutput = recipeOutput;
 	}
 
@@ -139,12 +145,78 @@ public abstract class CombinationRecipe<T extends Container> implements Recipe<T
 		return typeInfo;
 	}
 	
+	public void setMainhand(Ingredient mainhand) {
+		this.mainhandIngredient = mainhand;
+	}
+	
+	public void setOffhand(Ingredient offhand) {
+		this.offhandIngredient = offhand;
+	}
+	
+	public void setIngredients(Ingredient mainhand, Ingredient offhand) {
+		setMainhand(mainhand);setOffhand(offhand);
+	}
+	
 	public static class CombinationInv extends RecipeWrapper {
-		// Player inventory main hand
 		public CombinationInv(ItemStack stack) {
 			super(new ItemStackHandler(1));
 			inv.setStackInSlot(0, stack);
 		}
 
 	}
+	
+	public abstract class Serializer<R extends CombinationRecipe<?>> implements RecipeSerializer<R> {
+
+		@Override
+		public abstract R fromJson(ResourceLocation recipeID, JsonObject jsonObj);
+//			Ingredient mainhandIngredient = Ingredient.EMPTY;
+//			Ingredient offhandIngredient = Ingredient.EMPTY;
+//			NonNullList<RollableOutput> recipeOutput = NonNullList.create();
+//			int combinationDuration = 0;
+//			
+//			mainhandIngredient = Ingredient.fromJson(GsonHelper.getAsJsonObject(jsonObj, "mainhandIngredient"));
+//
+//			offhandIngredient = Ingredient.fromJson(GsonHelper.getAsJsonObject(jsonObj, "offhandIngredient"));
+//			
+//			for (JsonElement output : GsonHelper.getAsJsonArray(jsonObj, "recipeOutput")) {
+//				recipeOutput.add(RollableOutput.deserialize(output.getAsJsonObject()));
+//			}
+//			
+//			if (GsonHelper.isValidNode(jsonObj, "combinationTime"))
+//				combinationDuration = GsonHelper.getAsInt(jsonObj, "combinationTime");
+//			
+//			recipe = recipe.create(recipeID,mainhandIngredient,offhandIngredient,recipeOutput,combinationDuration);
+//			
+//			return recipe;
+		
+		public void toJson(JsonObject json, R recipe) {
+			JsonArray jsonOutputs = new JsonArray();
+
+			recipe.recipeOutput.forEach(o -> jsonOutputs.add(o.serialize()));
+
+			json.add("mainhandIngredient", recipe.mainhandIngredient.toJson());
+			json.add("offhandIngredient", recipe.offhandIngredient.toJson());
+			json.add("recipeOutput", jsonOutputs);
+
+			int combinationDuration = recipe.getCombinationDuration();
+			if (combinationDuration > 0)
+				json.addProperty("combinationDuration", combinationDuration);
+		}
+
+		@Override
+		public @Nullable R fromNetwork(ResourceLocation recipeID, FriendlyByteBuf buf) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public void toNetwork(FriendlyByteBuf buf, R recipe) {
+			// TODO Auto-generated method stub
+			
+		}
+
+        
+
+
+    }
 }
