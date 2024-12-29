@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import com.github.ternityclockworks.eurekaarcana.datagen.recipes.*;
-import com.github.ternityclockworks.eurekaarcana.datagen.recipes.combination.*;
 
 public class DataGeneration {
 

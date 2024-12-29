@@ -7,7 +7,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import org.jetbrains.annotations.Nullable;
 
 import com.github.ternityclockworks.eurekaarcana.server.recipe.EurekaRecipeRegistry;
-import com.github.ternityclockworks.eurekaarcana.server.recipe.IRecipeTypeInfo;
 import com.github.ternityclockworks.eurekaarcana.server.recipe.RollableOutput;
 import com.github.ternityclockworks.eurekaarcana.server.recipe.combination.CombinationRecipe.CombinationInv;
 import com.google.gson.JsonElement;
@@ -33,31 +32,30 @@ public class BookStrapCombinationRecipe extends CombinationRecipe<CombinationInv
 			  Ingredient offhandIngredient,
 			  NonNullList<RollableOutput> recipeOutput,
 			  int combinationDuration) {
-		super(EurekaRecipeRegistry.BOOK_STRAP_COMBINATION,
-				recipeID,
+		super(	recipeID,
 				mainhandIngredient,
 				offhandIngredient,
 				recipeOutput,
 				combinationDuration);
 	}
 	
-	public static boolean canCombine(Level world, ItemStack stack) {
-		return !getMatchingRecipes(world, stack).isEmpty();
-	}
-
-	public static ItemStack combine(Level world, ItemStack stack) {
-		List<Recipe<CombinationInv>> matchingRecipes = getMatchingRecipes(world, stack);
-		if (!matchingRecipes.isEmpty())
-			return matchingRecipes.get(0) // Craft result
-				.assemble(new CombinationInv(stack), world.registryAccess())
-				.copy();
-		return stack; // Cannot combine
-	}
-
-	public static List<Recipe<CombinationInv>> getMatchingRecipes(Level world, ItemStack stack) {
-		return world.getRecipeManager()
-			.getRecipesFor(EurekaRecipeRegistry.BOOK_STRAP_COMBINATION.getType(), new CombinationInv(stack), world);
-	}
+//	public static boolean canCombine(Level world, ItemStack stack) {
+//		return !getMatchingRecipes(world, stack).isEmpty();
+//	}
+//
+//	public static ItemStack combine(Level world, ItemStack stack) {
+//		List<Recipe<CombinationInv>> matchingRecipes = getMatchingRecipes(world, stack);
+//		if (!matchingRecipes.isEmpty())
+//			return matchingRecipes.get(0) // Craft result
+//				.assemble(new CombinationInv(stack), world.registryAccess())
+//				.copy();
+//		return stack; // Cannot combine
+//	}
+//
+//	public static List<Recipe<CombinationInv>> getMatchingRecipes(Level world, ItemStack stack) {
+//		return world.getRecipeManager()
+//			.getRecipesFor(EurekaRecipeRegistry.BOOK_STRAP_COMBINATION.getType(), new CombinationInv(stack), world);
+//	}
 	
 	@Override
 	public ResourceLocation getId() {

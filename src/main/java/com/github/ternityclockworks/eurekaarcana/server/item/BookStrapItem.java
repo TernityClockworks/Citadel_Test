@@ -28,56 +28,56 @@ public class BookStrapItem extends Item implements DyeableUsableItem {
 		super(new Item.Properties().stacksTo(1));
 	}
 	
-	@Override
-	public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
-		ItemStack stack = playerIn.getItemInHand(handIn);
-		
-		if (stack.getOrCreateTag()
-			.contains("BookStrapCombining")) {
-			playerIn.startUsingItem(handIn);
-			return new InteractionResultHolder<>(InteractionResult.PASS, stack);
-		}
-
-		InteractionHand otherHand =
-			handIn == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
-		ItemStack itemInOtherHand = playerIn.getItemInHand(otherHand);
-		if (BookStrapCombinationRecipe.canCombine(worldIn, itemInOtherHand)) {
-			ItemStack bookStrapStack = itemInOtherHand.copy();
-			ItemStack bookStrap = bookStrapStack.split(1);
-			playerIn.startUsingItem(handIn);
-			stack.getOrCreateTag()
-				.put("BookStrapCombining", bookStrap.serializeNBT());
-			playerIn.setItemInHand(otherHand, bookStrap);
-			return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
-		}
-		playerIn.startUsingItem(handIn);
-		
-		return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
-	}
-	
-	@Override
-	public ItemStack finishUsingItem(ItemStack stack, Level worldIn, LivingEntity entityLiving) {
-		if (!(entityLiving instanceof Player))
-			return stack;
-		Player player = (Player) entityLiving;
-		CompoundTag tag = stack.getOrCreateTag();
-		if (tag.contains("BookStrapCombining")) {
-			ItemStack combined =
-				BookStrapCombinationRecipe.combine(worldIn, stack);
-
-			if (!combined.isEmpty()) {
-				if (player instanceof FakePlayer) {
-					player.drop(combined, false, false);
-				} else {
-					player.getInventory()
-						.placeItemBackInInventory(combined);
-				}
-			}
-			tag.remove("BookStrapCombining");
-			stack.shrink(1);
-		}
-		return stack;
-	}
+//	@Override
+//	public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+//		ItemStack stack = playerIn.getItemInHand(handIn);
+//		
+//		if (stack.getOrCreateTag()
+//			.contains("BookStrapCombining")) {
+//			playerIn.startUsingItem(handIn);
+//			return new InteractionResultHolder<>(InteractionResult.PASS, stack);
+//		}
+//
+//		InteractionHand otherHand =
+//			handIn == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
+//		ItemStack itemInOtherHand = playerIn.getItemInHand(otherHand);
+//		if (BookStrapCombinationRecipe.canCombine(worldIn, itemInOtherHand)) {
+//			ItemStack bookStrapStack = itemInOtherHand.copy();
+//			ItemStack bookStrap = bookStrapStack.split(1);
+//			playerIn.startUsingItem(handIn);
+//			stack.getOrCreateTag()
+//				.put("BookStrapCombining", bookStrap.serializeNBT());
+//			playerIn.setItemInHand(otherHand, bookStrap);
+//			return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
+//		}
+//		playerIn.startUsingItem(handIn);
+//		
+//		return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
+//	}
+//	
+//	@Override
+//	public ItemStack finishUsingItem(ItemStack stack, Level worldIn, LivingEntity entityLiving) {
+//		if (!(entityLiving instanceof Player))
+//			return stack;
+//		Player player = (Player) entityLiving;
+//		CompoundTag tag = stack.getOrCreateTag();
+//		if (tag.contains("BookStrapCombining")) {
+//			ItemStack combined =
+//				BookStrapCombinationRecipe.combine(worldIn, stack);
+//
+//			if (!combined.isEmpty()) {
+//				if (player instanceof FakePlayer) {
+//					player.drop(combined, false, false);
+//				} else {
+//					player.getInventory()
+//						.placeItemBackInInventory(combined);
+//				}
+//			}
+//			tag.remove("BookStrapCombining");
+//			stack.shrink(1);
+//		}
+//		return stack;
+//	}
 
 	@Override
 	public void releaseUsing(ItemStack stack, Level worldIn, LivingEntity entityLiving, int timeLeft) {
