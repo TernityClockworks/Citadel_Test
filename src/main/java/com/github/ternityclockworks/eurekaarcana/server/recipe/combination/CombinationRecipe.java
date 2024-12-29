@@ -4,7 +4,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.github.ternityclockworks.eurekaarcana.server.recipe.IRecipeTypeInfo;
 import com.github.ternityclockworks.eurekaarcana.server.recipe.RollableOutput;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -32,28 +31,23 @@ import net.minecraft.world.item.crafting.RecipeType;
  * Based on Create's ProcessingRecipe abstract class.
  */
 @ParametersAreNonnullByDefault
-public abstract class CombinationRecipe<T extends Container> implements Recipe<T>{
+public class CombinationRecipe<T extends Container> implements Recipe<T>{
 
 	protected ResourceLocation recipeID; // Resource for both the recipe and loot table
 	protected Ingredient mainhandIngredient = Ingredient.EMPTY;
 	protected Ingredient offhandIngredient = Ingredient.EMPTY;
 	protected NonNullList<RollableOutput> recipeOutput = NonNullList.create();;
 	protected int combinationDuration = 0;
+	protected boolean enforceItemOrder = false;
 
 	private RecipeType<?> type;
 	private RecipeSerializer<?> serializer;
-	private IRecipeTypeInfo typeInfo;
 	
-	public CombinationRecipe( IRecipeTypeInfo typeInfo,
-							  ResourceLocation recipeID,
+	public CombinationRecipe( ResourceLocation recipeID,
 							  Ingredient mainhandIngredient,
 							  Ingredient offhandIngredient,
 							  NonNullList<RollableOutput> recipeOutput,
 							  int combinationDuration) {
-		this.typeInfo = typeInfo;
-		this.serializer = typeInfo.getSerializer();
-		this.type = typeInfo.getType();
-		
 		this.recipeID = recipeID;
 		this.mainhandIngredient = mainhandIngredient;
 		this.offhandIngredient = offhandIngredient;
@@ -140,10 +134,6 @@ public abstract class CombinationRecipe<T extends Container> implements Recipe<T
 	public RecipeType<?> getType() {
 		return type;
 	}
-
-	public IRecipeTypeInfo getTypeInfo() {
-		return typeInfo;
-	}
 	
 	public void setMainhand(Ingredient mainhand) {
 		this.mainhandIngredient = mainhand;
@@ -219,4 +209,10 @@ public abstract class CombinationRecipe<T extends Container> implements Recipe<T
 
 
     }
+
+	@Override
+	public ResourceLocation getId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
