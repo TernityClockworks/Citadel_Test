@@ -1,9 +1,12 @@
 package com.github.ternityclockworks.eurekaarcana.server.recipe.combination;
 
+import java.util.List;
+
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.github.ternityclockworks.eurekaarcana.server.recipe.EurekaRecipes;
 import com.github.ternityclockworks.eurekaarcana.server.recipe.RollableOutput;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -14,7 +17,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.RecipeWrapper;
 import net.minecraft.core.NonNullList;
@@ -24,6 +26,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+
 
 /**
  * Basic template for all manual combination recipes.
@@ -63,7 +66,8 @@ public class CombinationRecipe<T extends Container> implements Recipe<T>{
 		return ingredients;
 	}
 	
-	public ResourceLocation getRecipeTypeID() {
+	@Override
+	public ResourceLocation getId() {
 		return recipeID;
 	}
 	
@@ -118,7 +122,7 @@ public class CombinationRecipe<T extends Container> implements Recipe<T>{
 	public boolean isSpecial() {
 		return true;
 	}
-
+	
 	// Manual combination recipes do not show up in the recipe book
 	@Override
 	public String getGroup() {
@@ -147,6 +151,24 @@ public class CombinationRecipe<T extends Container> implements Recipe<T>{
 		setMainhand(mainhand);setOffhand(offhand);
 	}
 	
+	public static boolean canCombine(Level world, ItemStack stack) {
+		return !getMatchingRecipes(world, stack).isEmpty();
+	}
+
+	public static ItemStack combine(Level world, ItemStack stack) {
+		List<Recipe<CombinationInv>> matchingRecipes = getMatchingRecipes(world, stack);
+		if (!matchingRecipes.isEmpty())
+			return matchingRecipes.get(0) // Craft result
+				.assemble(new CombinationInv(stack), world.registryAccess())
+				.copy();
+		return stack; // Cannot combine
+	}
+	
+	public static List<Recipe<CombinationInv>> getMatchingRecipes(Level world, ItemStack stack) {
+		return world.getRecipeManager()
+			.getRecipesFor(EurekaRecipes.COMBINATION.getType(), new CombinationInv(stack), world);
+	}
+	
 	public static class CombinationInv extends RecipeWrapper {
 		public CombinationInv(ItemStack stack) {
 			super(new ItemStackHandler(1));
@@ -155,29 +177,29 @@ public class CombinationRecipe<T extends Container> implements Recipe<T>{
 
 	}
 	
-	public abstract class Serializer<R extends CombinationRecipe<?>> implements RecipeSerializer<R> {
+	public static class Serializer<R extends CombinationRecipe<?>> implements RecipeSerializer<R> {
 
+		@SuppressWarnings("unchecked")
 		@Override
-		public abstract R fromJson(ResourceLocation recipeID, JsonObject jsonObj);
-//			Ingredient mainhandIngredient = Ingredient.EMPTY;
-//			Ingredient offhandIngredient = Ingredient.EMPTY;
-//			NonNullList<RollableOutput> recipeOutput = NonNullList.create();
-//			int combinationDuration = 0;
-//			
-//			mainhandIngredient = Ingredient.fromJson(GsonHelper.getAsJsonObject(jsonObj, "mainhandIngredient"));
-//
-//			offhandIngredient = Ingredient.fromJson(GsonHelper.getAsJsonObject(jsonObj, "offhandIngredient"));
-//			
-//			for (JsonElement output : GsonHelper.getAsJsonArray(jsonObj, "recipeOutput")) {
-//				recipeOutput.add(RollableOutput.deserialize(output.getAsJsonObject()));
-//			}
-//			
-//			if (GsonHelper.isValidNode(jsonObj, "combinationTime"))
-//				combinationDuration = GsonHelper.getAsInt(jsonObj, "combinationTime");
-//			
-//			recipe = recipe.create(recipeID,mainhandIngredient,offhandIngredient,recipeOutput,combinationDuration);
-//			
-//			return recipe;
+		public R fromJson(ResourceLocation recipeID, JsonObject jsonObj) {
+			Ingredient mainhandIngredient = Ingredient.EMPTY;
+			Ingredient offhandIngredient = Ingredient.EMPTY;
+			NonNullList<RollableOutput> recipeOutput = NonNullList.create();
+			int combinationDuration = 0;
+			
+			mainhandIngredient = Ingredient.fromJson(GsonHelper.getAsJsonObject(jsonObj, "mainhandIngredient"));
+
+			offhandIngredient = Ingredient.fromJson(GsonHelper.getAsJsonObject(jsonObj, "offhandIngredient"));
+			
+			for (JsonElement output : GsonHelper.getAsJsonArray(jsonObj, "recipeOutput")) {
+				recipeOutput.add(RollableOutput.deserialize(output.getAsJsonObject()));
+			}
+			
+			if (GsonHelper.isValidNode(jsonObj, "combinationTime"))
+				combinationDuration = GsonHelper.getAsInt(jsonObj, "combinationTime");
+			
+			return (R) new CombinationRecipe<CombinationInv>(recipeID,mainhandIngredient,offhandIngredient,recipeOutput,combinationDuration);
+		}
 		
 		public void toJson(JsonObject json, R recipe) {
 			JsonArray jsonOutputs = new JsonArray();
@@ -209,10 +231,4 @@ public class CombinationRecipe<T extends Container> implements Recipe<T>{
 
 
     }
-
-	@Override
-	public ResourceLocation getId() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

@@ -6,7 +6,7 @@ import com.github.ternityclockworks.eurekaarcana.server.CommonProxy;
 import com.github.ternityclockworks.eurekaarcana.server.item.EurekaItemColorRegistry;
 import com.github.ternityclockworks.eurekaarcana.server.item.EurekaItemRegistry;
 import com.github.ternityclockworks.eurekaarcana.server.misc.*;
-import com.github.ternityclockworks.eurekaarcana.server.recipe.EurekaRecipeRegistry;
+import com.github.ternityclockworks.eurekaarcana.server.recipe.EurekaRecipes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.github.ternityclockworks.eurekaarcana.datagen.DataGeneration;
@@ -89,7 +89,7 @@ public class EurekaArcana
         //MinecraftForge.EVENT_BUS.register(new CommonEvents());
         EurekaItemRegistry.ITEMS.register(modEventBus);
         EurekaCreativeTabRegistry.CREATIVE_TABS.register(modEventBus);
-        EurekaRecipeRegistry.register(modEventBus);
+        EurekaRecipes.register(modEventBus);
         
         modEventBus.addListener(DataGeneration::generate);
         modEventBus.addListener(EurekaItemColorRegistry::register);

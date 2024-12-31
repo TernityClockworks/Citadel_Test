@@ -2,8 +2,6 @@ package com.github.ternityclockworks.eurekaarcana.server.item;
 
 import java.util.function.Consumer;
 
-import com.github.ternityclockworks.eurekaarcana.server.recipe.combination.BookStrapCombinationRecipe;
-
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
