@@ -12,6 +12,7 @@ import com.github.ternityclockworks.eurekaarcana.server.recipe.dyeing.JournalDye
 import com.github.ternityclockworks.eurekaarcana.util.Lang;
 
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.crafting.Recipe;
@@ -29,12 +30,12 @@ import net.minecraftforge.registries.RegistryObject;
  * Heavily based on Create's AllRecipeTypes for organization.
  * See <a href="https://github.com/Creators-of-Create/Create/blob/mc1.20.1/dev/src/main/java/com/simibubi/create/AllRecipeTypes.java"> Create AllRecipeTypes</a>
  */
-public enum EurekaRecipes {
+public enum EurekaRecipeCategory {
 
 	BOOK_STRAP_DYEING(() -> new SimpleCraftingRecipeSerializer<>(BookStrapDyeingRecipe::new), () -> RecipeType.CRAFTING, false),
 	JOURNAL_DYEING(() -> new SimpleCraftingRecipeSerializer<>(JournalDyeingRecipe::new), () -> RecipeType.CRAFTING, false),
-	COMBINATION(CombinationRecipe.Serializer::new)
-	//MECHANICAL_DISASSEMBLY(MechanicalDisassemblyRecipe.Serializer::new)
+	COMBINATION(CombinationRecipe.Serializer::new),
+	MECHANICAL_DISASSEMBLY(CombinationRecipe.Serializer::new)
 	;
 	
 	private final ResourceLocation recipeID;
@@ -43,7 +44,7 @@ public enum EurekaRecipes {
 	private final RegistryObject<RecipeType<?>> typeObject;
 	private final Supplier<RecipeType<?>> type;
 
-	EurekaRecipes(Supplier<RecipeSerializer<?>> serializerSupplier, Supplier<RecipeType<?>> typeSupplier, boolean registerType) {
+	EurekaRecipeCategory(Supplier<RecipeSerializer<?>> serializerSupplier, Supplier<RecipeType<?>> typeSupplier, boolean registerType) {
 		String name = Lang.asId(name());
 		recipeID = EurekaArcana.asResource(name);
 		serializerObject = Registers.RECIPE_SERIALIZERS.register(name, serializerSupplier);
@@ -56,12 +57,42 @@ public enum EurekaRecipes {
 		}
 	}
 
-	EurekaRecipes(Supplier<RecipeSerializer<?>> serializerSupplier) {
+	EurekaRecipeCategory(Supplier<RecipeSerializer<?>> serializerSupplier) {
 		String name = Lang.asId(name());
 		recipeID = EurekaArcana.asResource(name);
 		serializerObject = Registers.RECIPE_SERIALIZERS.register(name, serializerSupplier);
 		typeObject = Registers.RECIPE_TYPES.register(name, () -> RecipeType.simple(recipeID));
 		type = typeObject;
+	}
+	
+	public static EurekaRecipeCategory fromString(String category) {
+		EurekaRecipeCategory recipeCategory;
+		switch(category) {
+		case "COMBINATION": recipeCategory = EurekaRecipeCategory.COMBINATION; break;
+		case "MECHANICAL_DISASSEMBLY": recipeCategory = EurekaRecipeCategory.MECHANICAL_DISASSEMBLY; break;
+		default:
+			throw new IllegalStateException("Could not find a recipe category of type " + category);
+		}
+		return recipeCategory;
+	}
+	
+	public static String toString(EurekaRecipeCategory recipeCategory) {
+		String category;
+		switch(recipeCategory) {
+		case COMBINATION: category = "COMBINATION"; break;
+		case MECHANICAL_DISASSEMBLY: category = "MECHANICAL_DISASSEMBLY"; break;
+		default:
+			category = "";
+		}
+		return category;
+	}
+	
+	public static EurekaRecipeCategory fromNetwork(FriendlyByteBuf buf) {
+		return buf.readEnum(EurekaRecipeCategory.class);
+	}
+	
+	public static void toNetwork(FriendlyByteBuf buf, EurekaRecipeCategory category) {
+		buf.writeEnum(category);
 	}
 	
 	public static void register(IEventBus modEventBus) {

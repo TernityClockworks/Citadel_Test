@@ -12,6 +12,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -60,7 +61,7 @@ public class RollableOutput {
 		return out;
 	}
 
-	public JsonElement serialize() {
+	public JsonElement toJson() {
 		JsonObject json = new JsonObject();
 		ResourceLocation resourceLocation = compatDatagenOutput == null ? RegisteredObjects.getKeyOrThrow(stack
 			.getItem()) : compatDatagenOutput.getFirst();
@@ -76,7 +77,7 @@ public class RollableOutput {
 		return json;
 	}
 
-	public static RollableOutput deserialize(JsonElement je) {
+	public static RollableOutput fromJson(JsonElement je) {
 		if (!je.isJsonObject())
 			throw new JsonSyntaxException("RollableOutput must be a json object");
 
@@ -106,6 +107,19 @@ public class RollableOutput {
 
 	public static RollableOutput read(FriendlyByteBuf buf) {
 		return new RollableOutput(buf.readItem(), buf.readFloat());
+	}
+	
+	public static void toNetwork(FriendlyByteBuf buf, NonNullList<RollableOutput> output) {
+		buf.writeVarInt(output.size());
+		output.forEach(o -> o.write(buf));
+	}
+	
+	public static NonNullList<RollableOutput> fromNetwork(FriendlyByteBuf buf) {
+		NonNullList<RollableOutput> output = NonNullList.create();
+		int size = buf.readVarInt();
+		for (int i = 0; i < size; i++)
+			output.add(RollableOutput.read(buf));
+		return output;
 	}
 
 }

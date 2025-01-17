@@ -2,7 +2,7 @@ package com.github.ternityclockworks.eurekaarcana.datagen.recipes;
 
 import com.github.ternityclockworks.eurekaarcana.EurekaArcana;
 import com.github.ternityclockworks.eurekaarcana.server.item.EurekaItemRegistry;
-import com.github.ternityclockworks.eurekaarcana.server.recipe.EurekaRecipes;
+import com.github.ternityclockworks.eurekaarcana.server.recipe.EurekaRecipeCategory;
 
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
@@ -31,7 +31,7 @@ public class CraftingRecipeProvider extends EurekaRecipeProvider {
                     ItemPredicate.Builder.item().of(Tags.Items.INGOTS_GOLD).build()))
             .save(consumer);
         
-        SpecialRecipeBuilder.special(EurekaRecipes.BOOK_STRAP_DYEING.getSerializer()).save(consumer, EurekaArcana.MODID + ":" + "book_strap_dyeing");
-        SpecialRecipeBuilder.special(EurekaRecipes.JOURNAL_DYEING.getSerializer()).save(consumer, EurekaArcana.MODID + ":" + "journal_dyeing");
+        SpecialRecipeBuilder.special(EurekaRecipeCategory.BOOK_STRAP_DYEING.getSerializer()).save(consumer, EurekaArcana.MODID + ":" + "book_strap_dyeing");
+        SpecialRecipeBuilder.special(EurekaRecipeCategory.JOURNAL_DYEING.getSerializer()).save(consumer, EurekaArcana.MODID + ":" + "journal_dyeing");
     }
 }
