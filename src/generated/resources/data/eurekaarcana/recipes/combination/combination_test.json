@@ -1,0 +1,16 @@
+{
+  "type": "eurekaarcana:combination",
+  "combinationTime": 12,
+  "mainhandIngredient": {
+    "item": "eurekaarcana:book_strap"
+  },
+  "offhandIngredient": {
+    "item": "minecraft:book"
+  },
+  "recipeCategory": "COMBINATION",
+  "recipeOutput": [
+    {
+      "item": "eurekaarcana:eureka_journal"
+    }
+  ]
+}

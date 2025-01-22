@@ -13,7 +13,6 @@ import com.github.ternityclockworks.eurekaarcana.server.recipe.EurekaRecipeCateg
 import com.github.ternityclockworks.eurekaarcana.server.recipe.RollableOutput;
 import com.github.ternityclockworks.eurekaarcana.util.SerializerHelper;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import net.minecraft.world.Container;
@@ -206,6 +205,10 @@ public class CombinationRecipe<T extends Container> implements Recipe<T>{
 
 	}
 	
+	public static <C extends Container> Builder<CombinationRecipe<C>> build(EurekaRecipeCategory recipeCategory, ResourceLocation recipeID) {
+		return new Builder<CombinationRecipe<C>>(recipeCategory, recipeID);
+	}
+	
 	public static class Serializer<R extends CombinationRecipe<?>> implements RecipeSerializer<R> {
 
 		@SuppressWarnings("unchecked")
@@ -339,6 +342,7 @@ public class CombinationRecipe<T extends Container> implements Recipe<T>{
 		}
 		
 		public void save(Consumer<FinishedRecipe> consumer) {
+			verify();
 			consumer.accept(new CombinationOutput<R>(recipe));
 		}
 		
