@@ -5,12 +5,13 @@ import java.util.function.Consumer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import com.github.ternityclockworks.eurekaarcana.EurekaArcana;
 import com.github.ternityclockworks.eurekaarcana.server.recipe.EurekaRecipeCategory;
-import com.github.ternityclockworks.eurekaarcana.server.recipe.RollableOutput;
+import com.github.ternityclockworks.eurekaarcana.server.recipe.RollableItem;
 import com.github.ternityclockworks.eurekaarcana.util.SerializerHelper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -19,6 +20,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.RecipeWrapper;
@@ -38,13 +40,13 @@ import net.minecraft.world.item.crafting.RecipeType;
  * Based on Create's ProcessingRecipe abstract class.
  */
 @ParametersAreNonnullByDefault
-public class CombinationRecipe<T extends Container> implements Recipe<T>{
+public class CombinationRecipe implements Recipe<CombinationRecipe.CombinationInv>{
 
 	protected EurekaRecipeCategory recipeCategory;
 	protected ResourceLocation recipeID; // Resource for both the recipe and loot table
 	protected Ingredient mainhandIngredient = Ingredient.EMPTY;
 	protected Ingredient offhandIngredient = Ingredient.EMPTY;
-	protected NonNullList<RollableOutput> recipeOutput = NonNullList.create();
+	protected NonNullList<RollableItem> recipeOutput = NonNullList.create();
 	protected int combinationTime = 0;
 	//protected boolean enforceItemOrder = false;
 
@@ -55,7 +57,7 @@ public class CombinationRecipe<T extends Container> implements Recipe<T>{
 							  ResourceLocation recipeID,
 							  Ingredient mainhandIngredient,
 							  Ingredient offhandIngredient,
-							  NonNullList<RollableOutput> recipeOutput,
+							  NonNullList<RollableItem> recipeOutput,
 							  int combinationTime) {
 		this.recipeCategory = recipeCategory;
 		this.recipeID = recipeID;
@@ -103,23 +105,29 @@ public class CombinationRecipe<T extends Container> implements Recipe<T>{
 		return combinationTime;
 	}
 	
-	public NonNullList<RollableOutput> getRecipeOutput() {
+	public NonNullList<RollableItem> getRecipeOutput() {
 		return recipeOutput;
 	}
 	
 	@Override
-	public ItemStack getResultItem(RegistryAccess reg) {
-		// TODO roll output
-		return ItemStack.EMPTY;
+	public ItemStack getResultItem(RegistryAccess registryAccess) {
+		return recipeOutput.get(0).roll();
+	}
+	
+	public List<ItemStack> rollResults() {
+		List<ItemStack> results = Lists.newArrayList();
+		for (RollableItem output : recipeOutput)
+			results.add(output.roll());
+		return results;
 	}
 
 	@Override
-	public boolean matches(T inv, Level worldIn) {
+	public boolean matches(CombinationInv inv, Level worldIn) {
 		return mainhandIngredient.test(inv.getItem(0));
 	}
 	
 	@Override
-	public ItemStack assemble(T inv, RegistryAccess registryAccess) {
+	public ItemStack assemble(CombinationInv inv, RegistryAccess registryAccess) {
 		return getResultItem(registryAccess);
 	}
 
@@ -127,18 +135,12 @@ public class CombinationRecipe<T extends Container> implements Recipe<T>{
 	public boolean canCraftInDimensions(int width, int height) {
 		return true;
 	}
-
-	// TODO roll results from loot table
-//	@Override
-//	public ItemStack getResultItem(RegistryAccess registryAccess) {
-//		return recipeOutput.get(0);
-//	}
 	
-	protected void setRecipeOutput(NonNullList<RollableOutput> recipeOutput) {
+	protected void setRecipeOutput(NonNullList<RollableItem> recipeOutput) {
 		this.recipeOutput = recipeOutput;
 	}
 	
-	protected void addRecipeOutput(RollableOutput recipeOutput) {
+	protected void addRecipeOutput(RollableItem recipeOutput) {
 		this.recipeOutput.add(recipeOutput);
 	}
 
@@ -205,11 +207,11 @@ public class CombinationRecipe<T extends Container> implements Recipe<T>{
 
 	}
 	
-	public static <C extends Container> Builder<CombinationRecipe<C>> build(EurekaRecipeCategory recipeCategory, ResourceLocation recipeID) {
-		return new Builder<CombinationRecipe<C>>(recipeCategory, recipeID);
+	public static Builder<CombinationRecipe> build(EurekaRecipeCategory recipeCategory, ResourceLocation recipeID) {
+		return new Builder<CombinationRecipe>(recipeCategory, recipeID);
 	}
 	
-	public static class Serializer<R extends CombinationRecipe<?>> implements RecipeSerializer<R> {
+	public static class Serializer<R extends CombinationRecipe> implements RecipeSerializer<R> {
 
 		@SuppressWarnings("unchecked")
 		@Override
@@ -217,7 +219,7 @@ public class CombinationRecipe<T extends Container> implements Recipe<T>{
 			EurekaRecipeCategory recipeCategory;
 			Ingredient mainhandIngredient = Ingredient.EMPTY;
 			Ingredient offhandIngredient = Ingredient.EMPTY;
-			NonNullList<RollableOutput> recipeOutput = NonNullList.create();
+			NonNullList<RollableItem> recipeOutput = NonNullList.create();
 			int combinationTime = 0;
 			
 			recipeCategory = SerializerHelper.recipeCategoryFromJson(jsonObj);
@@ -226,7 +228,7 @@ public class CombinationRecipe<T extends Container> implements Recipe<T>{
 			recipeOutput = SerializerHelper.rollableOutputListFromJson(jsonObj);
 			combinationTime = GsonHelper.getAsInt(jsonObj, "combinationTime");
 			
-			return (R) new CombinationRecipe<CombinationInv>(recipeCategory,recipeID,mainhandIngredient,offhandIngredient,recipeOutput,combinationTime);
+			return (R) new CombinationRecipe(recipeCategory,recipeID,mainhandIngredient,offhandIngredient,recipeOutput,combinationTime);
 		}
 		
 		public void toJson(JsonObject json, R recipe) {
@@ -246,16 +248,16 @@ public class CombinationRecipe<T extends Container> implements Recipe<T>{
 			EurekaRecipeCategory recipeCategory;
 			Ingredient mainhandIngredient = Ingredient.EMPTY;
 			Ingredient offhandIngredient = Ingredient.EMPTY;
-			NonNullList<RollableOutput> recipeOutput = NonNullList.create();
+			NonNullList<RollableItem> recipeOutput = NonNullList.create();
 			int combinationTime = 0;
 			
 			recipeCategory = EurekaRecipeCategory.fromNetwork(buf);
 			mainhandIngredient = Ingredient.fromNetwork(buf);
 			offhandIngredient = Ingredient.fromNetwork(buf);
-			recipeOutput = RollableOutput.fromNetwork(buf);
+			recipeOutput = RollableItem.fromNetwork(buf);
 			combinationTime = buf.readVarInt();
 			
-			return (R) new CombinationRecipe<CombinationInv>(recipeCategory,recipeID,mainhandIngredient,offhandIngredient,recipeOutput,combinationTime);
+			return (R) new CombinationRecipe(recipeCategory,recipeID,mainhandIngredient,offhandIngredient,recipeOutput,combinationTime);
 		}
 
 		@Override
@@ -263,59 +265,106 @@ public class CombinationRecipe<T extends Container> implements Recipe<T>{
 			EurekaRecipeCategory recipeCategory = recipe.recipeCategory;
 			Ingredient mainhandIngredient = recipe.mainhandIngredient;
 			Ingredient offhandIngredient = recipe.offhandIngredient;
-			NonNullList<RollableOutput> recipeOutput = recipe.recipeOutput;
+			NonNullList<RollableItem> recipeOutput = recipe.recipeOutput;
 			int combinationTime = recipe.combinationTime;
 			
 			EurekaRecipeCategory.toNetwork(buf, recipeCategory);
 			mainhandIngredient.toNetwork(buf);
 			offhandIngredient.toNetwork(buf);
-			RollableOutput.toNetwork(buf, recipeOutput);
+			RollableItem.toNetwork(buf, recipeOutput);
 			buf.writeVarInt(combinationTime);
 		}
     }
 	
-	public static class Builder<R extends CombinationRecipe<?>> {
+	public static class Builder<R extends CombinationRecipe> {
 		private final R recipe;
 		
 		@SuppressWarnings("unchecked")
 		public <C extends Container> Builder(EurekaRecipeCategory recipeCategory, ResourceLocation recipeID) {
-			recipe = (R) new CombinationRecipe<C>(recipeCategory,recipeID);
+			recipe = (R) new CombinationRecipe(recipeCategory,recipeID);
 		}
 		
 		public Builder<R> withMainhandIngredient(Ingredient mainhand) {
 			recipe.setMainhand(mainhand); return this;
 		}
 		
+		public Builder<R> withMainhandIngredient(ItemLike mainhand) {
+			return withMainhandIngredient(Ingredient.of(mainhand));
+		}
+		
 		public Builder<R> withOffhandIngredient(Ingredient offhand) {
 			recipe.setOffhand(offhand); return this;
+		}
+		
+		public Builder<R> withOffhandIngredient(ItemLike offhand) {
+			return withOffhandIngredient(Ingredient.of(offhand));
 		}
 		
 		public Builder<R> withIngredients(Ingredient mainhand, Ingredient offhand) {
 			recipe.setIngredients(mainhand,offhand); return this;
 		}
 		
-		public Builder<R> withSingleOutput(RollableOutput output) {
-			NonNullList<RollableOutput> recipeOutput = NonNullList.create();
+		public Builder<R> withIngredients(ItemLike mainhand, ItemLike offhand) {
+			return withIngredients(Ingredient.of(mainhand),Ingredient.of(offhand));
+		}
+		
+		public Builder<R> withSingleOutput(RollableItem output) {
+			NonNullList<RollableItem> recipeOutput = NonNullList.create();
 			recipeOutput.add(output); recipe.setRecipeOutput(recipeOutput); return this;
 		}
 		
 		public Builder<R> withSingleOutput(ItemStack stack, float chance) {
-			NonNullList<RollableOutput> recipeOutput = NonNullList.create();
-			RollableOutput output = new RollableOutput(stack,chance);
-			recipeOutput.add(output); recipe.setRecipeOutput(recipeOutput); return this;
+			RollableItem output = new RollableItem(stack,chance);
+			return withSingleOutput(output);
 		}
 		
-		public Builder<R> addOutput(RollableOutput output) {
+		public Builder<R> withSingleOutput(ItemStack stack) {
+			RollableItem output = new RollableItem(stack);
+			return withSingleOutput(output);
+		}
+		
+		public Builder<R> withSingleOutput(ItemLike item, float chance) {
+			ItemStack stack = new ItemStack(item);
+			return withSingleOutput(stack, chance);
+		}
+		
+		public Builder<R> addOutput(RollableItem output) {
 			recipe.addRecipeOutput(output); return this;
 		}
 		
-		public Builder<R> addOutput(ItemStack stack, float chance) {
-			RollableOutput output = new RollableOutput(stack,chance);
-			recipe.addRecipeOutput(output); return this;
+		public Builder<R> addOutput(ItemStack stack) {
+			RollableItem output = new RollableItem(stack);
+			return addOutput(output);
 		}
 		
-		public Builder<R> withOutputs(NonNullList<RollableOutput> recipeOutput) {
+		public Builder<R> addOutput(ItemStack stack, int count) {
+			stack.setCount(count);
+			RollableItem output = new RollableItem(stack);
+			return addOutput(output);
+		}
+		
+		public Builder<R> addOutput(ItemStack stack, float... chance) {
+			RollableItem output = new RollableItem(stack,chance);
+			return addOutput(output);
+		}
+		
+		public Builder<R> addOutput(ItemStack stack, int base, float... chance) {
+			stack.setCount(base);
+			RollableItem output = new RollableItem(stack,chance);
+			return addOutput(output);
+		}
+		
+		public Builder<R> addOutput(ItemLike item, float... chance) {
+			ItemStack stack = new ItemStack(item);
+			return addOutput(stack, chance);
+		}
+		
+		public Builder<R> withOutputs(NonNullList<RollableItem> recipeOutput) {
 			recipe.setRecipeOutput(recipeOutput); return this;
+		}
+		
+		public Builder<R> withNoOutput() {
+			return withSingleOutput(RollableItem.EMPTY);
 		}
 		
 		public Builder<R> withCombinationTime(int combinationTime) {
@@ -336,18 +385,18 @@ public class CombinationRecipe<T extends Container> implements Recipe<T>{
 			}
 			if (recipe.recipeOutput.isEmpty()) {
 				flag = false;
-				buildLogger.warn(loggerPrefix + "Recipe has no output.");
+				buildLogger.warn(loggerPrefix + "Recipe has no output. If your recipe intends to return no items, ensure you invoke Builder::withNoOutput.");
 			}
 			return flag;
 		}
 		
 		public void save(Consumer<FinishedRecipe> consumer) {
-			verify();
-			consumer.accept(new CombinationOutput<R>(recipe));
+			if (verify())
+				consumer.accept(new CombinationOutput<R>(recipe));
 		}
 		
 		
-		protected static class CombinationOutput<R extends CombinationRecipe<?>> implements FinishedRecipe {
+		protected static class CombinationOutput<R extends CombinationRecipe> implements FinishedRecipe {
 			private final R recipe;
 			private final EurekaRecipeCategory recipeCategory;
 			private final ResourceLocation recipeID;

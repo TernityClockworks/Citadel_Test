@@ -44,7 +44,7 @@ public class EurekaItemRegistry {
 
     //public static final RegistryObject<Item> EUREKA_JOURNAL = ITEMS.register("eureka_journal", () -> new Item(new Item.Properties().rarity(EXAMPLE_RARITY).stacksTo(1)));
     public static final RegistryObject<Item> EUREKA_JOURNAL = ITEMS.register("eureka_journal", () -> new EurekaJournalItem());
-    public static final RegistryObject<Item> BROKEN_MECHANISM = ITEMS.register("broken_mechanism", () -> new Item(new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> BROKEN_MECHANISM = ITEMS.register("broken_mechanism", () -> new BrokenMechanismItem());
     public static final RegistryObject<Item> BOOK_STRAP = ITEMS.register("book_strap", () -> new BookStrapItem());
 
     //static {

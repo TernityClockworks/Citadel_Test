@@ -1,7 +1,7 @@
 package com.github.ternityclockworks.eurekaarcana.util;
 
 import com.github.ternityclockworks.eurekaarcana.server.recipe.EurekaRecipeCategory;
-import com.github.ternityclockworks.eurekaarcana.server.recipe.RollableOutput;
+import com.github.ternityclockworks.eurekaarcana.server.recipe.RollableItem;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -23,18 +23,18 @@ public class SerializerHelper {
 		return ingredientList;
 	}
 	
-	public static NonNullList<RollableOutput> rollableOutputListFromJson(JsonObject jsonObj) {
-		NonNullList<RollableOutput> outputList = NonNullList.create();
+	public static NonNullList<RollableItem> rollableOutputListFromJson(JsonObject jsonObj) {
+		NonNullList<RollableItem> outputList = NonNullList.create();
 		for (JsonElement output : GsonHelper.getAsJsonArray(jsonObj, "recipeOutput")) {
-			outputList.add(RollableOutput.fromJson(output.getAsJsonObject()));
+			outputList.add(RollableItem.fromJson(output.getAsJsonObject()));
 		}
 		return outputList;
 	}
 	
-	public static NonNullList<RollableOutput> rollableOutputListFromJson(JsonObject jsonObj, String fieldName) {
-		NonNullList<RollableOutput> outputList = NonNullList.create();
+	public static NonNullList<RollableItem> rollableOutputListFromJson(JsonObject jsonObj, String fieldName) {
+		NonNullList<RollableItem> outputList = NonNullList.create();
 		for (JsonElement output : GsonHelper.getAsJsonArray(jsonObj, fieldName)) {
-			outputList.add(RollableOutput.fromJson(output.getAsJsonObject()));
+			outputList.add(RollableItem.fromJson(output.getAsJsonObject()));
 		}
 		return outputList;
 	}
